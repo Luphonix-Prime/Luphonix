@@ -17,7 +17,7 @@ firebase_config = {
 }
 
 # Sample data for the website (will be replaced with Firebase data)
-
+    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 def fetch_github_team():
     """
     Fetches team members from the GitHub organization 'Luphonix-Prime'.
