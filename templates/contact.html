@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Luphonix{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-section-header">
+    <div class="container text-center">
+        <h1 class="text-white">Contact Us</h1>
+        <div class="divider"></div>
+        <p class="text-white-75 w-75 mx-auto">
+            We'd love to hear from you! Whether you have a question about our services, 
+            want to discuss a potential project, or just want to say hello, we're here to help.
+        </p>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <h3 class="text-white mb-4">Send Us a Message</h3>
+                    <form method="post" action="{{ url_for('contact') }}" id="contactForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                    <label for="name">Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                    <label for="email">Your Email</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                                    <label for="subject">Subject</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Your Message" style="height: 150px" required></textarea>
+                                    <label for="message">Your Message</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-paper-plane me-2"></i> Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <h3 class="text-white mb-4">Get in Touch</h3>
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-map-marker-alt fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Location</h5>
+                            <p class="text-white-75 mb-0">AHMEDABAD<br> GUJRAT</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-envelope fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Email</h5>
+                            <p class="text-white-75 mb-0">luphonix.prime@gmail.com<br>support@luphonix.com</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-phone-alt fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Phone</h5>
+                            <p class="text-white-75 mb-0">+91 97377 94277<br>+91 97254 87298</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <i class="fas fa-clock fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Business Hours</h5>
+                            <p class="text-white-75 mb-0">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday & Sunday: Closed</p>
+                        </div>
+                    </div>
+                    <hr class="divider my-4">
+                    <h5 class="text-white text-center mb-3">Follow Us</h5>
+                    <div class="social-links-large mb-0">
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-github"></i></a>
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Frequently Asked Questions</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                    Find answers to some of our most commonly asked questions. If you don't see what you're looking for, 
+                    please don't hesitate to contact us directly.
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item bg-transparent border-0 mb-3">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                What services does Luphonix offer?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body bg-dark text-white-75">
+                                Luphonix offers a wide range of technology services including web and mobile application development, 
+                                cloud solutions, database design and optimization, UI/UX design, and technology consulting. 
+                                We specialize in creating custom solutions tailored to the specific needs of our clients.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-0 mb-3">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                How long does it typically take to complete a project?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body bg-dark text-white-75">
+                                Project timelines vary depending on the complexity and scope of work. Small projects may take a few weeks, 
+                                while larger enterprise solutions could take several months. During our initial consultation, 
+                                we'll provide a detailed timeline estimate based on your specific requirements.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-0 mb-3">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                What is your pricing model?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body bg-dark text-white-75">
+                                We offer flexible pricing models including fixed-price projects, time and materials, and retainer arrangements. 
+                                The most suitable model depends on your project needs and requirements. We provide detailed proposals and 
+                                transparent pricing before any work begins.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-0 mb-3">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Do you provide ongoing support after project completion?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body bg-dark text-white-75">
+                                Yes, we offer various support and maintenance packages to ensure your solution continues to run smoothly 
+                                after launch. These can include regular updates, performance monitoring, security patches, and technical support. 
+                                We'll work with you to determine the appropriate level of ongoing support for your needs.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-0 mb-3">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                What makes Luphonix different from other technology companies?
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body bg-dark text-white-75">
+                                Luphonix combines technical excellence with a deep understanding of business objectives. We focus on creating 
+                                solutions that not only meet technical requirements but also deliver real business value. Our collaborative approach, 
+                                attention to detail, and commitment to quality set us apart and ensure successful outcomes for our clients.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add form field animation on focus
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.closest('.form-floating').classList.add('field-focused');
+            });
+            
+            control.addEventListener('blur', function() {
+                this.closest('.form-floating').classList.remove('field-focused');
+            });
+        });
+        
+        // Add button shake animation on hover
+        const submitButton = document.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.addEventListener('mouseenter', function() {
+                this.classList.add('btn-shake');
+                setTimeout(() => {
+                    this.classList.remove('btn-shake');
+                }, 500);
+            });
+        }
+    });
+</script>
+{% endblock %}
