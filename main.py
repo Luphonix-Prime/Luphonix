@@ -371,9 +371,6 @@ def contact():
         
         # 🔴 Instead of threading, call store_message directly for testing
         store_message(email, name, subject, message)
-        # Run Firestore write operation in a separate daemon thread
-        # thread = threading.Thread(target=store_message, args=(email, name, subject, message))
-        # thread.start()
 
         return redirect(url_for('contact'))
 
