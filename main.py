@@ -1,6 +1,23 @@
 import os
+import threading , logging
+from firebase_admin import credentials, firestore, initialize_app
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import requests
+
+# Setup logging to write logs to 'app.log' file
+logging.basicConfig(
+    filename="app.log",  # Log file name
+    level=logging.INFO,  # Logging level
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
+)
+open("app.log", "w").close()
+# Also print logs to the console
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+console_handler.setFormatter(formatter)
+logging.getLogger().addHandler(console_handler)
+
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.environ.get("SESSION_SECRET", "luphonix-secret-key")
@@ -327,6 +344,21 @@ def projects():
         firebase_app_id=firebase_config["appId"],
     )
 
+# Enable logging for debugging
+logging.basicConfig(level=logging.INFO)
+
+# Initialize Firebase
+basedir = os.path.abspath(os.path.dirname(__file__))
+cred_path = os.path.join(basedir, "static", "luphonix-9f554-firebase-adminsdk-fbsvc-afc468d8a7.json")
+
+try:
+    cred = credentials.Certificate(cred_path)
+    firebase_app = initialize_app(cred)
+    db = firestore.client()
+except Exception as e:
+    logging.error(f"Firebase Initialization Error: {e}")
+
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     """Contact form view"""
@@ -335,18 +367,44 @@ def contact():
         email = request.form.get('email')
         subject = request.form.get('subject')
         message = request.form.get('message')
+        logging.info(f"Received contact form submission: {email}, {name}, {subject}")
         
-        # In a real application, you'd store this in Firebase and/or send an email
-        # For now, just flash a success message
-        flash("Your message has been sent successfully. We'll get back to you soon!", "success")
+        # 🔴 Instead of threading, call store_message directly for testing
+        store_message(email, name, subject, message)
+        # Run Firestore write operation in a separate daemon thread
+        # thread = threading.Thread(target=store_message, args=(email, name, subject, message))
+        # thread.start()
+
         return redirect(url_for('contact'))
-    
+
     return render_template(
         'contact.html',
         firebase_api_key=firebase_config["apiKey"],
         firebase_project_id=firebase_config["projectId"],
         firebase_app_id=firebase_config["appId"],
     )
+def store_message(email, name, subject, message):
+    """Store the message in Firestore ✅"""
+    try:
+        if not email:
+            logging.info("No email provided")  
+            raise ValueError("Email is missing or empty")
+
+        logging.info(f"Storing message for {email} in Firestore")
+
+        doc_ref = db.collection("contacts").document(email)
+        doc_ref.set({
+            "name": name,
+            "email": email,
+            "subject": subject,
+            "message": message
+        })
+
+        logging.info(f"Stored message for {email} in Firestore")
+
+    except Exception as e:
+        logging.error(f"Store message: Firestore Error: {e}")
+# store_message("test@example.com", "Test User", "Subject", "Test message")
 
 @app.route('/login')
 def login():
