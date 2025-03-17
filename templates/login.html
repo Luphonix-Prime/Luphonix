@@ -3,6 +3,98 @@
 {% block title %}Login - Luphonix{% endblock %}
 
 {% block content %}
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    async function loadFirebaseConfig() {
+        try {
+            const response = await fetch("/firebase-config");
+            if (!response.ok) throw new Error("Firebase config not found!");
+
+            const firebaseConfig = await response.json();
+            console.log("Firebase Config:", firebaseConfig);
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            window.auth = auth;
+
+            console.log("Firebase initialized successfully.");
+
+            // Monitor auth state changes
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById("user-info").innerText = `Welcome, ${user.displayName || user.email}`;
+                    document.getElementById("logout-btn").classList.remove("d-none");
+                } else {
+                    document.getElementById("user-info").innerText = "";
+                    document.getElementById("logout-btn").classList.add("d-none");
+                }
+            });
+
+        } catch (error) {
+            console.error("Error loading Firebase config:", error);
+            showError(error.message);
+        }
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById("auth-error");
+        errorDiv.innerText = message;
+        errorDiv.classList.remove("d-none");
+    }
+
+    function clearError() {
+        document.getElementById("auth-error").classList.add("d-none");
+    }
+
+    window.loginWithGoogle = function () {
+        clearError();
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(window.auth, provider)
+            .then((result) => {
+                console.log("Google User:", result.user);
+                document.getElementById("user-info").innerText = `Welcome, ${result.user.displayName}`;
+            })
+            .catch((error) => showError(error.message));
+    };
+
+    window.loginWithGitHub = function () {
+        clearError();
+        const provider = new GithubAuthProvider();
+        signInWithPopup(window.auth, provider)
+            .then((result) => {
+                console.log("GitHub User:", result.user);
+                document.getElementById("user-info").innerText = `Welcome, ${result.user.displayName}`;
+            })
+            .catch((error) => showError(error.message));
+    };
+
+    window.loginWithEmailPassword = function () {
+        clearError();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        signInWithEmailAndPassword(window.auth, email, password)
+            .then((userCredential) => {
+                console.log("User:", userCredential.user);
+                document.getElementById("user-info").innerText = `Welcome, ${userCredential.user.email}`;
+            })
+            .catch((error) => showError(error.message));
+    };
+
+    window.logout = function () {
+        signOut(window.auth)
+            .then(() => {
+                document.getElementById("user-info").innerText = "";
+                console.log("User logged out.");
+            })
+            .catch((error) => showError(error.message));
+    };
+
+    loadFirebaseConfig();
+</script>
+
 <div class="login-page">
     <div class="container">
         <div class="row justify-content-center">
@@ -10,164 +102,37 @@
                 <div class="login-card text-center">
                     <img src="{{ url_for('static', filename='new.png') }}" alt="Luphonix Logo" class="login-logo mx-auto d-block">
                     <h2 class="text-white mb-4">Sign In</h2>
-                    
+
                     <p class="text-white-75 mb-4">Sign in to access exclusive features and content.</p>
-                    
+
                     <div id="auth-error" class="alert alert-danger d-none mb-4" role="alert"></div>
-                    
-                    <button class="login-btn google-sign-in mb-3" id="google-signin">
+
+                    <button class="login-btn google-sign-in mb-3" onclick="loginWithGoogle()">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                         Sign in with Google
                     </button>
-                    
-                    <button class="login-btn github-sign-in mb-3" id="github-signin" style="background-color: #333;">
+
+                    <button class="login-btn github-sign-in mb-3" onclick="loginWithGitHub()" style="background-color: #333;">
                         <i class="fab fa-github" style="font-size: 24px; margin-right: 10px;"></i>
                         Sign in with GitHub
                     </button>
-                    
+
                     <hr class="divider mt-4">
-                    
-                    <p class="text-white-75 mt-4 mb-0">
-                        Don't have an account? No problem! Simply sign in with your Google account to register.
-                    </p>
+
+                    <h3 class="text-white">Login with Email</h3>
+                    <input type="email" id="email" class="form-control mb-2" placeholder="Email">
+                    <input type="password" id="password" class="form-control mb-2" placeholder="Password">
+                    <button class="btn btn-primary" onclick="loginWithEmailPassword()">Login</button>
+
+                    <hr class="divider mt-4">
+
+                    <p class="text-white-75">Don't have an account? No problem! Simply sign in with your Google account to register.</p>
+
+                    <p id="user-info" class="text-success"></p>
+                    <button id="logout-btn" class="btn btn-danger d-none" onclick="logout()">Logout</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script type="module">
-    import { 
-        GoogleAuthProvider, 
-        GithubAuthProvider,
-        signInWithRedirect, 
-        getRedirectResult,
-        setPersistence,
-        browserLocalPersistence
-    } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js';
-
-    // Handle redirect result when user returns from authentication
-    document.addEventListener('DOMContentLoaded', function() {
-        const errorContainer = document.getElementById('auth-error');
-        
-        console.log('Checking auth state and redirect results...');
-        
-        // Log auth status for debugging
-        if (window.auth) {
-            console.log('Auth is initialized properly');
-            
-            // Set persistence to local (survive browser restart)
-            // This makes the login session persist
-            setPersistence(auth, browserLocalPersistence)
-              .then(() => {
-                console.log('Persistence set to LOCAL');
-              })
-              .catch((error) => {
-                console.error('Error setting persistence:', error);
-              });
-        } else {
-            console.error('Auth is not initialized correctly');
-            if (errorContainer) {
-                errorContainer.textContent = 'Firebase authentication not initialized correctly. Please refresh the page.';
-                errorContainer.classList.remove('d-none');
-            }
-            return;
-        }
-        
-        // Process redirect result
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result) {
-                    // This gives you a Google/GitHub Access Token
-                    let credential = null;
-                    let provider = '';
-                    
-                    if (result.providerId === 'google.com' || (result._tokenResponse && result._tokenResponse.providerId === 'google.com')) {
-                        credential = GoogleAuthProvider.credentialFromResult(result);
-                        provider = 'Google';
-                    } else if (result.providerId === 'github.com' || (result._tokenResponse && result._tokenResponse.providerId === 'github.com')) {
-                        credential = GithubAuthProvider.credentialFromResult(result);
-                        provider = 'GitHub';
-                    }
-                    
-                    if (credential) {
-                        const token = credential.accessToken;
-                        console.log(`Successfully signed in with ${provider}`);
-                        
-                        // Save user data to Firebase realtime database or Firestore if needed
-                        // This would be handled server-side in a production app
-                        
-                        // Redirect to homepage after successful login
-                        window.location.href = "{{ url_for('index') }}";
-                    }
-                } else {
-                    console.log('No redirect result found');
-                }
-            })
-            .catch((error) => {
-                // Handle errors
-                console.error('Firebase auth error:', error);
-                if (errorContainer) {
-                    errorContainer.textContent = error.message || 'Authentication failed. Please try again.';
-                    errorContainer.classList.remove('d-none');
-                }
-            });
-        
-        // Set up Google sign-in button
-        const googleSignInButton = document.getElementById('google-signin');
-        if (googleSignInButton) {
-            googleSignInButton.addEventListener('click', function() {
-                console.log('Google sign-in button clicked');
-                const provider = new GoogleAuthProvider();
-                // Add scopes if needed
-                provider.addScope('profile');
-                provider.addScope('email');
-                // Set additional parameters
-                provider.setCustomParameters({
-                    'prompt': 'select_account'
-                });
-                // Set language
-                auth.languageCode = 'en';
-                
-                // Sign in with redirect
-                signInWithRedirect(auth, provider)
-                    .catch(error => {
-                        console.error('Error during Google sign in redirect:', error);
-                        if (errorContainer) {
-                            errorContainer.textContent = error.message || 'Google sign-in failed. Please try again.';
-                            errorContainer.classList.remove('d-none');
-                        }
-                    });
-            });
-        } else {
-            console.error('Google sign-in button not found in the DOM');
-        }
-        
-        // Set up GitHub sign-in button
-        const githubSignInButton = document.getElementById('github-signin');
-        if (githubSignInButton) {
-            githubSignInButton.addEventListener('click', function() {
-                console.log('GitHub sign-in button clicked');
-                const provider = new GithubAuthProvider();
-                // Add scopes if needed
-                provider.addScope('read:user');
-                provider.addScope('user:email');
-                
-                // Sign in with redirect
-                signInWithRedirect(auth, provider)
-                    .catch(error => {
-                        console.error('Error during GitHub sign in redirect:', error);
-                        if (errorContainer) {
-                            errorContainer.textContent = error.message || 'GitHub sign-in failed. Please try again.';
-                            errorContainer.classList.remove('d-none');
-                        }
-                    });
-            });
-        } else {
-            console.error('GitHub sign-in button not found in the DOM');
-        }
-    });
-</script>
 {% endblock %}
