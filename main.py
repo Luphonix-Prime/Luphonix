@@ -7,13 +7,14 @@ app.secret_key = os.environ.get("SESSION_SECRET", "luphonix-secret-key")
 
 # Firebase configuration - will be passed to client-side
 firebase_config = {
-    "apiKey": os.environ.get("FIREBASE_API_KEY", "AIzaSyDsQm2dNtaKdRGQnYbJuMf3o2twbY_ORpo"),
-    "authDomain": os.environ.get("FIREBASE_PROJECT_ID", "signup-login-realtime-7e107") + ".firebaseapp.com",
-    "databaseURL": "https://signup-login-realtime-7e107-default-rtdb.firebaseio.com",
-    "projectId": os.environ.get("FIREBASE_PROJECT_ID", "signup-login-realtime-7e107"),
-    "storageBucket": os.environ.get("FIREBASE_PROJECT_ID", "signup-login-realtime-7e107") + ".firebasestorage.app",
-    "messagingSenderId": "209493006193",
-    "appId": os.environ.get("FIREBASE_APP_ID", "1:209493006193:web:bbf7b765d7faf280f508d0")
+    "apiKey": os.environ.get("FIREBASE_API_KEY", "AIzaSyCin1Sjipm8Pj7VyRO_j6UcbQuimUxCfMI"),
+    "authDomain": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554") + ".firebaseapp.com",
+    "databaseURL": "https://luphonix-9f554-default-rtdb.firebaseio.com",  # If using Realtime Database
+    "projectId": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554"),
+    "storageBucket": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554") + ".appspot.com",  # Fixed
+    "messagingSenderId": os.environ.get("FIREBASE_MESSAGING_SENDER_ID", "538849210035"),
+    "appId": os.environ.get("FIREBASE_APP_ID", "1:538849210035:web:5a6263f1798ad4ca67cac6"),
+    "measurementId": os.environ.get("FIREBASE_MEASUREMENT_ID", "G-WT7XMF9EFF")  # Optional
 }
 
 # Sample data for the website (will be replaced with Firebase data)
@@ -356,6 +357,11 @@ def login():
         firebase_project_id=firebase_config["projectId"],
         firebase_app_id=firebase_config["appId"],
     )
+    
+@app.route("/firebase-config")
+def firebase_config_route():
+    return jsonify(firebase_config)
+
 print("Available routes:")
 for rule in app.url_map.iter_rules():
     print(rule)
