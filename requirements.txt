@@ -164,3 +164,4 @@ yarl
 yaspin
 zipp
 zope.interface
+supabase
