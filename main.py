@@ -413,7 +413,7 @@ def store_message(email, name, subject, message):
 
 @app.route('/login')
 def login():
-    """Login page for Firebase Authentication"""
+    """Login page for Supabase Authentication"""
     return render_template(
         'login.html',
        supabase_url=SUPABASE_URL,
@@ -426,6 +426,12 @@ def supabase_config_route():
         "supabase_url": SUPABASE_URL,
         "supabase_key": SUPABASE_KEY,
     })
+@app.route("/privacy-policy")
+def privacy_policy():
+    return """<h1>Privacy Policy</h1>
+              <p>This is a placeholder Privacy Policy for our website.</p>
+              <p>We do not store any personal data except authentication details provided by Supabase.</p>
+              <p>For any concerns, contact us at [your email].</p>"""
 
 
 print("Available routes:")
