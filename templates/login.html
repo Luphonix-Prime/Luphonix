@@ -8,45 +8,65 @@
 
     const SUPABASE_URL = "{{ supabase_url }}";
     const SUPABASE_ANON_KEY = "{{ supabase_key }}";
-
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function checkUserSession() {
-        const { data: { user } } = await supabase.auth.getUser();
+    function storeToken() {
+        const hash = window.location.hash;
+        const params = new URLSearchParams(hash.replace("#", ""));
+        const token = params.get("access_token");
 
-        if (user) {
-            document.getElementById("user-info").innerText = `Welcome, ${user.email}`;
-            document.getElementById("logout-btn").classList.remove("d-none");
+        if (token) {
+            sessionStorage.setItem("supabase_token", token);
+            window.history.replaceState(null, null, window.location.pathname); // Clean URL
+        }
+    }
+
+    async function checkUserSession() {
+        const token = sessionStorage.getItem("supabase_token");
+
+        if (token) {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            if (user) {
+                document.getElementById("user-info").innerText = `Welcome, ${user.email}`;
+                document.getElementById("logout-btn").classList.remove("d-none");
+            }
         } else {
             document.getElementById("user-info").innerText = "";
             document.getElementById("logout-btn").classList.add("d-none");
         }
     }
 
-    window.loginWithGoogle = async function () {
-        let { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-        if (error) console.error("Google Login Error:", error.message);
-    };
+    async function login(provider) {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo: window.location.origin }
+        });
 
-    window.loginWithGitHub = async function () {
-        let { error } = await supabase.auth.signInWithOAuth({ provider: 'github' });
-        if (error) console.error("GitHub Login Error:", error.message);
-    };
+        if (error) {
+            console.error(`${provider} Login Error:`, error.message);
+        }
+    }
 
-    // window.loginWithEmailPassword = async function () {
-    //     const email = document.getElementById("email").value;
-    //     const password = document.getElementById("password").value;
-
-    //     let { error } = await supabase.auth.signInWithPassword({ email, password });
-    //     if (error) console.error("Email Login Error:", error.message);
-    // };
-
-    window.logout = async function () {
+    async function logout() {
         await supabase.auth.signOut();
+        sessionStorage.removeItem("supabase_token");
         document.getElementById("user-info").innerText = "";
-    };
+        document.getElementById("logout-btn").classList.add("d-none");
+    }
 
-    checkUserSession();
+    window.onload = function () {
+        storeToken();  // Store token in sessionStorage on page load
+        checkUserSession();
+
+        document.getElementById("google-login").addEventListener("click", () => login("google"));
+        document.getElementById("github-login").addEventListener("click", () => login("github"));
+
+        const logoutBtn = document.getElementById("logout-btn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", logout);
+        }
+    };
 </script>
 
 <div class="login-page">
@@ -56,35 +76,23 @@
                 <div class="login-card text-center">
                     <img src="{{ url_for('static', filename='new.png') }}" alt="Luphonix Logo" class="login-logo mx-auto d-block">
                     <h2 class="text-white mb-4">Sign In</h2>
-
                     <p class="text-white-75 mb-4">Sign in to access exclusive features and content.</p>
-
-                    <button class="login-btn google-sign-in mb-3" onclick="loginWithGoogle()">
+                    <button id="google-login" class="login-btn google-sign-in mb-3">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                         Sign in with Google
                     </button>
-
-                    <button class="login-btn github-sign-in mb-3" onclick="loginWithGitHub()" style="background-color: #333;">
+                    <button id="github-login" class="login-btn github-sign-in mb-3" style="background-color: #333;">
                         <i class="fab fa-github" style="font-size: 24px; margin-right: 10px;"></i>
                         Sign in with GitHub
                     </button>
-
-                    <!-- <hr class="divider mt-4">
-
-                    <h3 class="text-white">Login with Email</h3>
-                    <input type="email" id="email" class="form-control mb-2" placeholder="Email">
-                    <input type="password" id="password" class="form-control mb-2" placeholder="Password">
-                    <button class="btn btn-primary" onclick="loginWithEmailPassword()">Login</button> -->
-
                     <hr class="divider mt-4">
-
                     <p class="text-white-75">Don't have an account? Sign in with Google or GitHub to register.</p>
-
                     <p id="user-info" class="text-success"></p>
-                    <button id="logout-btn" class="btn btn-danger d-none" onclick="logout()">Logout</button>
+                    <button id="logout-btn" class="btn btn-danger">Logout</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

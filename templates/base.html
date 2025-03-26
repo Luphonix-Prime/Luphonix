@@ -264,7 +264,28 @@
             }
         });
     </script>
-    
+     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const userInfo = document.querySelector(".user-info");
+            const signOutBtn = document.querySelector(".sign-out-btn");
+            
+            const userCookie = document.cookie.split('; ').find(row => row.startsWith('luphonix_user='));
+            if (userCookie) {
+                const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
+                if (userData && userData.displayName) {
+                    userInfo.innerHTML = `<i class="fas fa-user me-1"></i> ${userData.displayName}`;
+                    userInfo.href = "#";
+                    signOutBtn.classList.remove("d-none");
+                }
+            }
+            
+            signOutBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                document.cookie = "luphonix_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                window.location.href = "{{ url_for('index') }}";
+            });
+        });
+    </script>
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     

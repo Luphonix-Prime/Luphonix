@@ -229,26 +229,28 @@
             });
         }
     });
+
 </script>
-<script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-    const SUPABASE_URL = "{{ supabase_url }}";
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const SUPABASE_URL = "{{ supabase_url }}";
     const SUPABASE_ANON_KEY = "{{ supabase_key }}";
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    async function checkUserSession(event) {
-        event.preventDefault(); // Prevent form from submitting immediately
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            document.getElementById("contactForm").submit(); // Submit form if user is logged in
-        } else {
-            alert("You must be logged in via Google or GitHub to submit the form.");
+        const form = document.getElementById("contact-form");
+        const submitBtn = document.getElementById("submit-btn");
+        const authWarning = document.getElementById("auth-warning");
+
+        async function checkUserSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                authWarning.classList.remove("hidden");
+                submitBtn.disabled = true;
+            }
         }
-    }
-    
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("contactForm");
-        form.addEventListener("submit", checkUserSession);
+
+        checkUserSession();
     });
 </script>
+
 {% endblock %}
