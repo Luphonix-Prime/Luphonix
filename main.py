@@ -1,6 +1,6 @@
 import os
 import threading , logging
-from firebase_admin import credentials, firestore, initialize_app
+from supabase import create_client, Client
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import requests
 
@@ -22,17 +22,24 @@ logging.getLogger().addHandler(console_handler)
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.environ.get("SESSION_SECRET", "luphonix-secret-key")
 
-# Firebase configuration - will be passed to client-side
-firebase_config = {
-    "apiKey": os.environ.get("FIREBASE_API_KEY", "AIzaSyCin1Sjipm8Pj7VyRO_j6UcbQuimUxCfMI"),
-    "authDomain": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554") + ".firebaseapp.com",
-    "databaseURL": "https://luphonix-9f554-default-rtdb.firebaseio.com",  # If using Realtime Database
-    "projectId": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554"),
-    "storageBucket": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554") + ".appspot.com",  # Fixed
-    "messagingSenderId": os.environ.get("FIREBASE_MESSAGING_SENDER_ID", "538849210035"),
-    "appId": os.environ.get("FIREBASE_APP_ID", "1:538849210035:web:5a6263f1798ad4ca67cac6"),
-    "measurementId": os.environ.get("FIREBASE_MEASUREMENT_ID", "G-WT7XMF9EFF")  # Optional
-}
+# Supabase configuration - will be passed to client-side
+
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://vsccadraatbavvnqqmxc.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzY2NhZHJhYXRiYXZ2bnFxbXhjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Mjg4MDM3MCwiZXhwIjoyMDU4NDU2MzcwfQ.C6eoeZcYR_T8ms5cDQAbD-PUG_aY5pPrLu6qJbiZu0I")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+# # Firebase configuration - will be passed to client-side
+# firebase_config = {
+#     "apiKey": os.environ.get("FIREBASE_API_KEY", "AIzaSyCin1Sjipm8Pj7VyRO_j6UcbQuimUxCfMI"),
+#     "authDomain": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554") + ".firebaseapp.com",
+#     "databaseURL": "https://luphonix-9f554-default-rtdb.firebaseio.com",  # If using Realtime Database
+#     "projectId": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554"),
+#     "storageBucket": os.environ.get("FIREBASE_PROJECT_ID", "luphonix-9f554") + ".appspot.com",  # Fixed
+#     "messagingSenderId": os.environ.get("FIREBASE_MESSAGING_SENDER_ID", "538849210035"),
+#     "appId": os.environ.get("FIREBASE_APP_ID", "1:538849210035:web:5a6263f1798ad4ca67cac6"),
+#     "measurementId": os.environ.get("FIREBASE_MEASUREMENT_ID", "G-WT7XMF9EFF")  # Optional
+# }
 
 # Sample data for the website (will be replaced with Firebase data)
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -289,9 +296,8 @@ def index():
         team_members=team_members,
         technologies=technologies,
         featured_projects=projects,
-        firebase_api_key=firebase_config["apiKey"],
-        firebase_project_id=firebase_config["projectId"],
-        firebase_app_id=firebase_config["appId"],
+        supabase_url=SUPABASE_URL,
+    supabase_key=SUPABASE_KEY
     )
 
 @app.route('/team')
@@ -301,9 +307,8 @@ def team():
     return render_template(
         'team.html',
         team_members=team_members,
-        firebase_api_key=firebase_config["apiKey"],
-        firebase_project_id=firebase_config["projectId"],
-        firebase_app_id=firebase_config["appId"],
+        supabase_url=SUPABASE_URL,
+    supabase_key=SUPABASE_KEY
     )
 
 @app.route('/technologies')
@@ -318,9 +323,8 @@ def technologies():
         'technologies.html',
         technologies=TECHNOLOGIES,
         technologies_by_category=technologies_by_category,
-        firebase_api_key=firebase_config["apiKey"],
-        firebase_project_id=firebase_config["projectId"],
-        firebase_app_id=firebase_config["appId"],
+        supabase_url=SUPABASE_URL,
+    supabase_key=SUPABASE_KEY
     )
 
 @app.route('/projects')
@@ -339,25 +343,23 @@ def projects():
         'projects.html',
         projects=projects_list,
         github_repos=github_repos,
-        firebase_api_key=firebase_config["apiKey"],
-        firebase_project_id=firebase_config["projectId"],
-        firebase_app_id=firebase_config["appId"],
+        supabase_url=SUPABASE_URL,
+    supabase_key=SUPABASE_KEY
     )
 
 # Enable logging for debugging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize Firebase
-basedir = os.path.abspath(os.path.dirname(__file__))
-cred_path = os.path.join(basedir, "static", "luphonix-9f554-firebase-adminsdk-fbsvc-afc468d8a7.json")
+# basedir = os.path.abspath(os.path.dirname(__file__))
+# cred_path = os.path.join(basedir, "static", "luphonix-9f554-firebase-adminsdk-fbsvc-afc468d8a7.json")
 
-try:
-    cred = credentials.Certificate(cred_path)
-    firebase_app = initialize_app(cred)
-    db = firestore.client()
-except Exception as e:
-    logging.error(f"Firebase Initialization Error: {e}")
-
+# try:
+#     cred = credentials.Certificate(cred_path)
+#     firebase_app = initialize_app(cred)
+#     db = firestore.client()
+# except Exception as e:
+#     logging.error(f"Firebase Initialization Error: {e}")
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -367,58 +369,70 @@ def contact():
         email = request.form.get('email')
         subject = request.form.get('subject')
         message = request.form.get('message')
+
         logging.info(f"Received contact form submission: {email}, {name}, {subject}")
-        
-        # 🔴 Instead of threading, call store_message directly for testing
-        store_message(email, name, subject, message)
-        # Run Firestore write operation in a separate daemon thread
-        # thread = threading.Thread(target=store_message, args=(email, name, subject, message))
-        # thread.start()
+
+        try:
+            store_message(email, name, subject, message)
+            logging.info("Message stored successfully.")
+        except Exception as e:
+            logging.error(f"Error storing message: {e}")
 
         return redirect(url_for('contact'))
 
-    return render_template(
-        'contact.html',
-        firebase_api_key=firebase_config["apiKey"],
-        firebase_project_id=firebase_config["projectId"],
-        firebase_app_id=firebase_config["appId"],
-    )
+    return render_template('contact.html', supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY)
+
 def store_message(email, name, subject, message):
-    """Store the message in Firestore ✅"""
+    """Store the message in Supabase"""
     try:
         if not email:
-            logging.info("No email provided")  
+            logging.info("No email provided")
             raise ValueError("Email is missing or empty")
 
-        logging.info(f"Storing message for {email} in Firestore")
+        logging.info(f"Storing message for {email} in Supabase")
 
-        doc_ref = db.collection("contacts").document(email)
-        doc_ref.set({
+        data = {
             "name": name,
             "email": email,
             "subject": subject,
             "message": message
-        })
+        }
 
-        logging.info(f"Stored message for {email} in Firestore")
+        response = supabase.table("contacts").insert(data).execute()
+
+        # ✅ Check if response has an 'error' attribute
+        if hasattr(response, "error") and response.error:
+            logging.error(f"Supabase Error: {response.error}")
+        else:
+            logging.info(f"Stored message for {email} in Supabase successfully!")
 
     except Exception as e:
-        logging.error(f"Store message: Firestore Error: {e}")
-# store_message("test@example.com", "Test User", "Subject", "Test message")
+        logging.error(f"Store message: Supabase Error: {e}")
+
+
 
 @app.route('/login')
 def login():
-    """Login page for Firebase Authentication"""
+    """Login page for Supabase Authentication"""
     return render_template(
         'login.html',
-        firebase_api_key=firebase_config["apiKey"],
-        firebase_project_id=firebase_config["projectId"],
-        firebase_app_id=firebase_config["appId"],
+       supabase_url=SUPABASE_URL,
+    supabase_key=SUPABASE_KEY
     )
     
-@app.route("/firebase-config")
-def firebase_config_route():
-    return jsonify(firebase_config)
+@app.route("/supabase-config")
+def supabase_config_route():
+    return jsonify({
+        "supabase_url": SUPABASE_URL,
+        "supabase_key": SUPABASE_KEY,
+    })
+@app.route("/privacy-policy")
+def privacy_policy():
+    return """<h1>Privacy Policy</h1>
+              <p>This is a placeholder Privacy Policy for our website.</p>
+              <p>We do not store any personal data except authentication details provided by Supabase.</p>
+              <p>For any concerns, contact us at [your email].</p>"""
+
 
 print("Available routes:")
 for rule in app.url_map.iter_rules():
