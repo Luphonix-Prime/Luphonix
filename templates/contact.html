@@ -99,7 +99,7 @@
                     <hr class="divider my-4">
                     <h5 class="text-white text-center mb-3">Follow Us</h5>
                     <div class="social-links-large mb-0">
-                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-github"></i></a>
+                        <a class="social-link-large" href="https://github.com/Luphonix-Prime" target="_blank"><i class="fab fa-github"></i></a>
                         <a class="social-link-large" href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
                         <a class="social-link-large" href="#" target="_blank"><i class="fab fa-twitter"></i></a>
                         <a class="social-link-large" href="#" target="_blank"><i class="fab fa-facebook"></i></a>
@@ -107,7 +107,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>  
 </section>
 
 <!-- FAQ Section -->
@@ -204,7 +204,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Add form field animation on focus
         const formControls = document.querySelectorAll('.form-control');
@@ -229,5 +229,84 @@
             });
         }
     });
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const SUPABASE_URL = "{{ supabase_url }}";
+    const SUPABASE_ANON_KEY = "{{ supabase_key }}";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const form = document.getElementById("contact-form");
+        const submitBtn = document.getElementById("submit-btn");
+        const authWarning = document.getElementById("auth-warning");
+
+        async function checkUserSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                authWarning.classList.remove("hidden");
+                submitBtn.disabled = true;
+            }
+        }
+
+        checkUserSession();
+    });
+</script> -->
+<script>
+
+    // Initialize Supabase
+const SUPABASE_URL = "{{ supabase_url }}";
+const SUPABASE_ANON_KEY = "{{ supabase_key }}";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.addEventListener("DOMContentLoaded", async function () {
+    async function checkUserSession() {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+            console.error("Error fetching session:", error);
+            return;
+        }
+        
+        if (!session) {
+            console.warn("No active session found!");
+            document.getElementById("auth-warning").classList.remove("hidden");
+            document.getElementById("submit-btn").disabled = true;
+        } else {
+            console.log("User logged in:", session.user.email);
+            document.getElementById("user-email").value = session.user.email;
+        }
+    }
+    
+    await checkUserSession();
+
+    // Handle form submission
+    document.getElementById("contact-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("user-email").value;
+        const message = document.getElementById("message").value;
+
+        if (!name || !email || !message) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        // Store the contact message in Supabase
+        const { data, error } = await supabase
+            .from("contact_messages")
+            .insert([{ name, email, message }]);
+
+        if (error) {
+            console.error("Error submitting form:", error);
+            alert("Failed to send message. Please try again.");
+        } else {
+            alert("Message sent successfully!");
+            document.getElementById("contact-form").reset();
+        }
+    });
+});
+
 </script>
 {% endblock %}

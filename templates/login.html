@@ -8,46 +8,94 @@
 
     const SUPABASE_URL = "{{ supabase_url }}";
     const SUPABASE_ANON_KEY = "{{ supabase_key }}";
-
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function checkUserSession() {
-        const { data: { user } } = await supabase.auth.getUser();
+    // Function to store session tokens in sessionStorage
+    function storeSession(session) {
+        if (session) {
+            sessionStorage.setItem("supabase_token", session.access_token);
+            sessionStorage.setItem("supabase_refresh_token", session.refresh_token);
+        }
+    }
 
-        if (user) {
-            document.getElementById("user-info").innerText = `Welcome, ${user.email}`;
-            document.getElementById("logout-btn").classList.remove("d-none");
+    // Function to restore session from sessionStorage
+    async function restoreSession() {
+        const token = sessionStorage.getItem("supabase_token");
+        const refreshToken = sessionStorage.getItem("supabase_refresh_token");
+
+        if (token && refreshToken) {
+            const { data, error } = await supabase.auth.setSession({
+                access_token: token,
+                refresh_token: refreshToken
+            });
+
+            if (error) {
+                console.error("Session restoration error:", error.message);
+                sessionStorage.clear();
+            }
+        }
+    }
+
+    // Function to check if a user is logged in
+    async function checkUserSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+            storeSession(session); // Store session if available
+            const user = session.user;
+            if (user) {
+                document.getElementById("user-info").innerText = `Welcome, ${user.email}`;
+                document.getElementById("logout-btn").classList.remove("d-none");
+            }
         } else {
             document.getElementById("user-info").innerText = "";
             document.getElementById("logout-btn").classList.add("d-none");
         }
     }
 
-    window.loginWithGoogle = async function () {
-        let { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-        if (error) console.error("Google Login Error:", error.message);
-    };
+    // Listen for auth state changes and store session data
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN") {
+            storeSession(session);  // Save session immediately on login
+            checkUserSession();     // Update UI
+            window.location.href = "/contact"; // Redirect to Contact Page
+        } else if (event === "SIGNED_OUT") {
+            sessionStorage.clear(); // Clear session storage on logout
+        }
+    });
 
-    window.loginWithGitHub = async function () {
-        let { error } = await supabase.auth.signInWithOAuth({ provider: 'github' });
-        if (error) console.error("GitHub Login Error:", error.message);
-    };
+    // Login function with session storage
+    async function login(provider) {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+                redirectTo: window.location.origin + "/contact" // Redirect user after login
+            }
+        });
 
-    // window.loginWithEmailPassword = async function () {
-    //     const email = document.getElementById("email").value;
-    //     const password = document.getElementById("password").value;
+        if (error) {
+            console.error(`${provider} Login Error:`, error.message);
+        }
+    }
 
-    //     let { error } = await supabase.auth.signInWithPassword({ email, password });
-    //     if (error) console.error("Email Login Error:", error.message);
-    // };
-
-    window.logout = async function () {
+    // Logout function
+    async function logout() {
         await supabase.auth.signOut();
-        document.getElementById("user-info").innerText = "";
-    };
+        sessionStorage.clear(); // Clear session storage on logout
+        window.location.reload();
+    }
 
-    checkUserSession();
+    // Page Load Operations
+    window.onload = async function () {
+        await restoreSession(); // Restore session from sessionStorage
+        await checkUserSession(); // Check if user is logged in
+
+        document.getElementById("google-login").addEventListener("click", () => login("google"));
+        document.getElementById("github-login").addEventListener("click", () => login("github"));
+        document.getElementById("logout-btn").addEventListener("click", logout);
+    };
 </script>
+
 
 <div class="login-page">
     <div class="container">
@@ -56,35 +104,23 @@
                 <div class="login-card text-center">
                     <img src="{{ url_for('static', filename='new.png') }}" alt="Luphonix Logo" class="login-logo mx-auto d-block">
                     <h2 class="text-white mb-4">Sign In</h2>
-
                     <p class="text-white-75 mb-4">Sign in to access exclusive features and content.</p>
-
-                    <button class="login-btn google-sign-in mb-3" onclick="loginWithGoogle()">
+                    <button id="google-login" class="login-btn google-sign-in mb-3">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                         Sign in with Google
                     </button>
-
-                    <button class="login-btn github-sign-in mb-3" onclick="loginWithGitHub()" style="background-color: #333;">
+                    <button id="github-login" class="login-btn github-sign-in mb-3" style="background-color: #333;">
                         <i class="fab fa-github" style="font-size: 24px; margin-right: 10px;"></i>
                         Sign in with GitHub
                     </button>
-
-                    <!-- <hr class="divider mt-4">
-
-                    <h3 class="text-white">Login with Email</h3>
-                    <input type="email" id="email" class="form-control mb-2" placeholder="Email">
-                    <input type="password" id="password" class="form-control mb-2" placeholder="Password">
-                    <button class="btn btn-primary" onclick="loginWithEmailPassword()">Login</button> -->
-
                     <hr class="divider mt-4">
-
                     <p class="text-white-75">Don't have an account? Sign in with Google or GitHub to register.</p>
-
                     <p id="user-info" class="text-success"></p>
-                    <button id="logout-btn" class="btn btn-danger d-none" onclick="logout()">Logout</button>
+                    <button id="logout-btn" class="btn btn-danger d-none">Logout</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

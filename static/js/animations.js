@@ -3,6 +3,8 @@
  * Provides animations and interactive elements for the Luphonix website
  */
 
+const { default: firebase } = require("firebase/compat/app");
+
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize animations
