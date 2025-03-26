@@ -10,23 +10,39 @@
     const SUPABASE_ANON_KEY = "{{ supabase_key }}";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function storeToken() {
-        const hash = window.location.hash;
-        const params = new URLSearchParams(hash.replace("#", ""));
-        const token = params.get("access_token");
-
-        if (token) {
-            sessionStorage.setItem("supabase_token", token);
-            window.history.replaceState(null, null, window.location.pathname); // Clean URL
+    // Function to store session tokens in sessionStorage
+    function storeSession(session) {
+        if (session) {
+            sessionStorage.setItem("supabase_token", session.access_token);
+            sessionStorage.setItem("supabase_refresh_token", session.refresh_token);
         }
     }
 
-    async function checkUserSession() {
+    // Function to restore session from sessionStorage
+    async function restoreSession() {
         const token = sessionStorage.getItem("supabase_token");
+        const refreshToken = sessionStorage.getItem("supabase_refresh_token");
 
-        if (token) {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            
+        if (token && refreshToken) {
+            const { data, error } = await supabase.auth.setSession({
+                access_token: token,
+                refresh_token: refreshToken
+            });
+
+            if (error) {
+                console.error("Session restoration error:", error.message);
+                sessionStorage.clear();
+            }
+        }
+    }
+
+    // Function to check if a user is logged in
+    async function checkUserSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+            storeSession(session); // Store session if available
+            const user = session.user;
             if (user) {
                 document.getElementById("user-info").innerText = `Welcome, ${user.email}`;
                 document.getElementById("logout-btn").classList.remove("d-none");
@@ -37,10 +53,24 @@
         }
     }
 
+    // Listen for auth state changes and store session data
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN") {
+            storeSession(session);  // Save session immediately on login
+            checkUserSession();     // Update UI
+            window.location.href = "/contact"; // Redirect to Contact Page
+        } else if (event === "SIGNED_OUT") {
+            sessionStorage.clear(); // Clear session storage on logout
+        }
+    });
+
+    // Login function with session storage
     async function login(provider) {
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
-            options: { redirectTo: window.location.origin }
+            options: {
+                redirectTo: window.location.origin + "/contact" // Redirect user after login
+            }
         });
 
         if (error) {
@@ -48,26 +78,24 @@
         }
     }
 
+    // Logout function
     async function logout() {
         await supabase.auth.signOut();
-        sessionStorage.removeItem("supabase_token");
-        document.getElementById("user-info").innerText = "";
-        document.getElementById("logout-btn").classList.add("d-none");
+        sessionStorage.clear(); // Clear session storage on logout
+        window.location.reload();
     }
 
-    window.onload = function () {
-        storeToken();  // Store token in sessionStorage on page load
-        checkUserSession();
+    // Page Load Operations
+    window.onload = async function () {
+        await restoreSession(); // Restore session from sessionStorage
+        await checkUserSession(); // Check if user is logged in
 
         document.getElementById("google-login").addEventListener("click", () => login("google"));
         document.getElementById("github-login").addEventListener("click", () => login("github"));
-
-        const logoutBtn = document.getElementById("logout-btn");
-        if (logoutBtn) {
-            logoutBtn.addEventListener("click", logout);
-        }
+        document.getElementById("logout-btn").addEventListener("click", logout);
     };
 </script>
+
 
 <div class="login-page">
     <div class="container">
@@ -88,7 +116,7 @@
                     <hr class="divider mt-4">
                     <p class="text-white-75">Don't have an account? Sign in with Google or GitHub to register.</p>
                     <p id="user-info" class="text-success"></p>
-                    <button id="logout-btn" class="btn btn-danger">Logout</button>
+                    <button id="logout-btn" class="btn btn-danger d-none">Logout</button>
                 </div>
             </div>
         </div>
