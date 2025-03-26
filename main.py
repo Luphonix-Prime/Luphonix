@@ -42,8 +42,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # }
 
 # Sample data for the website (will be replaced with Firebase data)
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-print(f"GitHub token: {GITHUB_TOKEN}")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "ghp_1234567890abcdefgh")  # GitHub API token
 def fetch_github_team():
     """
     Fetches team members from the GitHub organization 'Luphonix-Prime'.
@@ -439,4 +438,4 @@ for rule in app.url_map.iter_rules():
     print(rule)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)
