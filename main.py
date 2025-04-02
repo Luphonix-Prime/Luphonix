@@ -367,28 +367,27 @@ def send_feedback_email(user_email, name, subject):
             'Thank you for contacting Luphonix',
             recipients=[user_email]
         )
-        msg.html = f'''
-
-        
+        msg.html = '''
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
     <!-- Animated infinity symbol -->
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;">
-        <style>
-            @keyframes drawInfinity {
-                0% { stroke-dashoffset: 1000; }
-                100% { stroke-dashoffset: 0; }
-            }
-            .infinity-path {
-                stroke: #00c3ff;
-                stroke-width: 3;
-                fill: none;
-                stroke-dasharray: 1000;
-                stroke-dashoffset: 1000;
-                animation: drawInfinity 2s linear infinite;
-                filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.5));
-            }
-        </style>
+        
         <svg viewBox="0 0 100 60" style="width: 100%; height: 100%; opacity: 100%;">
+            <style>
+                @keyframes drawInfinity {
+                    from { stroke-dashoffset: 1000; }
+                    to { stroke-dashoffset: 0; }
+                }
+                .infinity-path {
+                    stroke: #00c3ff;
+                    stroke-width: 3;
+                    fill: none;
+                    stroke-dasharray: 1000;
+                    stroke-dashoffset: 1000;
+                    animation: drawInfinity 2s linear infinite;
+                    filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.5));
+                }
+            </style>
             <path class="infinity-path" d="M25,30 C25,15 35,15 50,30 C65,45 75,45 75,30 C75,15 65,15 50,30 C35,45 25,45 25,30"/>
         </svg>
     </div>
