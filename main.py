@@ -368,18 +368,11 @@ def send_feedback_email(user_email, name, subject):
             recipients=[user_email]
         )
         msg.html = f'''
-
-        
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
+           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
     <!-- Animated infinity symbol -->
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;">
-        <style>
-            @keyframes drawInfinity {
-                0% { stroke-dashoffset: 1000; }
-                100% { stroke-dashoffset: 0; }
-            }
-            .infinity-path {
-                stroke: #00c3ff;
+        <style> @keyframes drawInfinity {0% { stroke-dashoffset: 1000; } 100% { stroke-dashoffset: 0; } }
+            .infinity-path { stroke: #00c3ff;
                 stroke-width: 3;
                 fill: none;
                 stroke-dasharray: 1000;
