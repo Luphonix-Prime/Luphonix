@@ -367,37 +367,24 @@ def send_feedback_email(user_email, name, subject):
             'Thank you for contacting Luphonix',
             recipients=[user_email]
         )
-        msg.html = '''
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
+        msg.html = f'''
+     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
+    <!-- Background infinity symbol -->
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; background-image: url('loop.gif'); background-size: contain; background-position: center; background-repeat: no-repeat; opacity: 0.85; z-index: 0;"></div>
+    
     <!-- Animated infinity symbol -->
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;">
-        
-        <svg viewBox="0 0 100 60" style="width: 100%; height: 100%; opacity: 100%;">
-            <style>
-                @keyframes drawInfinity {
-                    from { stroke-dashoffset: 1000; }
-                    to { stroke-dashoffset: 0; }
-                }
-                .infinity-path {
-                    stroke: #00c3ff;
-                    stroke-width: 3;
-                    fill: none;
-                    stroke-dasharray: 1000;
-                    stroke-dashoffset: 1000;
-                    animation: drawInfinity 2s linear infinite;
-                    filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.5));
-                }
-            </style>
-            <path class="infinity-path" d="M25,30 C25,15 35,15 50,30 C65,45 75,45 75,30 C75,15 65,15 50,30 C35,45 25,45 25,30"/>
+        <svg viewBox="0 0 100 60" style="width: 100%; height: 100%; opacity: 0.2;">
+            <path style="stroke: #00c3ff; stroke-width: 3; fill: none; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawInfinity 2s linear infinite; filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.5));" d="M25,30 C25,15 35,15 50,30 C65,45 75,45 75,30 C75,15 65,15 50,30 C35,45 25,45 25,30"/>
         </svg>
     </div>
 
-    <!-- Rest of your content remains the same -->
-    <div style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; text-align: center; position: relative;">
+    <!-- Content sections -->
+    <div style="background-color: rgba(0, 0, 0, 0.8); padding: 20px; text-align: center; position: relative;">
         <h1 style="color: #00c3ff; margin: 0; position: relative; z-index: 2; text-shadow: 0 0 10px rgba(0, 195, 255, 0.5);">Thank You!</h1>
     </div>
     
-    <div style="padding: 20px; background-color: rgba(0, 0, 0, 0.7); position: relative; z-index: 1; border-radius: 10px;">
+    <div style="padding: 20px;opacity: 100%; background-color: rgba(0, 0, 0, 0.7); position: relative; z-index: 1; border-radius: 10px;">
         <h2 style="text-align: center; color: #00c3ff;">Luphonix</h2>
         <p style="text-align: center; font-style: italic; color: #fff;">Innovating for a Better Tomorrow</p>
         
