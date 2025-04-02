@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Luphonix{% endblock %}
+
+{% block content %}
+<script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const SUPABASE_URL = "{{ supabase_url }}";
+    const SUPABASE_ANON_KEY = "{{ supabase_key }}";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Function to store session tokens in sessionStorage
+    function storeSession(session) {
+        if (session) {
+            sessionStorage.setItem("supabase_token", session.access_token);
+            sessionStorage.setItem("supabase_refresh_token", session.refresh_token);
+        }
+    }
+
+    // Function to restore session from sessionStorage
+    async function restoreSession() {
+        const token = sessionStorage.getItem("supabase_token");
+        const refreshToken = sessionStorage.getItem("supabase_refresh_token");
+
+        if (token && refreshToken) {
+            const { data, error } = await supabase.auth.setSession({
+                access_token: token,
+                refresh_token: refreshToken
+            });
+
+            if (error) {
+                console.error("Session restoration error:", error.message);
+                sessionStorage.clear();
+            }
+        }
+    }
+
+    // Function to store user data in Supabase
+    async function storeUserData(user) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .upsert({
+                    id: user.id,
+                    email: user.email,
+                    username: user.user_metadata?.user_name || user.email,
+                    avatar_url: user.user_metadata?.avatar_url,
+                    provider: 'github',
+                    last_sign_in: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'id',
+                    ignoreDuplicates: false
+                });
+
+            if (error) throw error;
+            console.log('User data stored successfully');
+        } catch (error) {
+            console.error('Error storing user data:', error.message);
+        }
+    }
+
+    // Function to check if a user is logged in
+    async function checkUserSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+            storeSession(session); // Store session if available
+            const user = session.user;
+            if (user) {
+                await storeUserData(user); // Store user data in Supabase
+                document.getElementById("user-info").innerText = `Welcome, ${user.email}`;
+                document.getElementById("logout-btn").classList.remove("d-none");
+            }
+        } else {
+            document.getElementById("user-info").innerText = "";
+            document.getElementById("logout-btn").classList.add("d-none");
+        }
+    }
+
+    // Listen for auth state changes and store session data
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN") {
+            storeSession(session);  // Save session immediately on login
+            checkUserSession();     // Update UI and store user data
+            window.location.href = "/contact"; // Redirect to Contact Page
+        } else if (event === "SIGNED_OUT") {
+            sessionStorage.clear(); // Clear session storage on logout
+        }
+    });
+
+    // Login function with session storage
+    async function login(provider) {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+                redirectTo: window.location.origin + "/contact", // Redirect user after login
+                scopes: 'read:user user:email' // GitHub specific scopes
+            }
+        });
+
+        if (error) {
+            console.error(`${provider} Login Error:`, error.message);
+        }
+    }
+
+    // Logout function
+    async function logout() {
+        await supabase.auth.signOut();
+        sessionStorage.clear(); // Clear session storage on logout
+        window.location.reload();
+    }
+
+    // Page Load Operations
+    window.onload = async function () {
+        await restoreSession(); // Restore session from sessionStorage
+        await checkUserSession(); // Check if user is logged in
+
+        document.getElementById("github-login").addEventListener("click", () => login("github"));
+        document.getElementById("logout-btn").addEventListener("click", logout);
+    };
+</script>
+
+<div class="login-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="login-card text-center">
+                    <img src="{{ url_for('static', filename='new.png') }}" alt="Luphonix Logo" class="login-logo mx-auto d-block">
+                    <h2 class="text-white mb-4">Sign In</h2>
+                    <p class="text-white-75 mb-4">Sign in to access exclusive features and content.</p>
+                    <button id="github-login" class="login-btn github-sign-in mb-3" style="background-color: #333;">
+                        <i class="fab fa-github" style="font-size: 24px; margin-right: 10px;"></i>
+                        Sign in with GitHub
+                    </button>
+                    <hr class="divider mt-4">
+                    <p class="text-white-75">Don't have an account? Sign in with GitHub to register.</p>
+                    <p id="user-info" class="text-success"></p>
+                    <button id="logout-btn" class="btn btn-danger d-none">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

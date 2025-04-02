@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Technologies - Luphonix{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-section-header">
+    <div class="container text-center">
+        <h1 class="text-white">Our Technologies</h1>
+        <div class="divider"></div>
+        <p class="text-white-75 w-75 mx-auto">
+            We leverage cutting-edge technologies to build scalable, secure, and user-friendly solutions 
+            that help our clients achieve their business objectives.
+        </p>
+    </div>
+</section>
+
+<!-- Technologies Categories Section -->
+<section class="page-section">
+    <div class="container">
+        {% for category, category_display in {'frontend': 'Frontend', 'backend': 'Backend', 'database': 'Database', 'devops': 'DevOps', 'mobile': 'Mobile', 'other': 'Other'}.items() %}
+            {% if technologies_by_category[category] %}
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h2 class="text-white mb-4">{{ category_display }} Technologies</h2>
+                    <div class="row gy-4">
+                        {% for tech in technologies_by_category[category] %}
+                        <div class="col-lg-3 col-md-6">
+                            <div class="tech-card text-center">
+                                <div class="mb-4">
+                                    <i class="{{ tech.icon_class }} fa-3x text-luphonix tech-icon"></i>
+                                </div>
+                                <h5 class="text-white">{{ tech.name }}</h5>
+                                <p class="text-white-75 mb-0">{{ tech.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Approach Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Our Technical Approach</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                    Our technical approach combines best practices, modern architecture patterns, 
+                    and continuous improvement to deliver robust and scalable solutions.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <div class="approach-card">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-layer-group fa-3x text-luphonix"></i>
+                    </div>
+                    <h4 class="text-white text-center mb-3">Microservices Architecture</h4>
+                    <p class="text-white-75">
+                        We design modular, loosely coupled systems that can be developed, deployed, and 
+                        scaled independently, improving resilience and development velocity.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="approach-card">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-code-branch fa-3x text-luphonix"></i>
+                    </div>
+                    <h4 class="text-white text-center mb-3">CI/CD Pipelines</h4>
+                    <p class="text-white-75">
+                        We implement robust continuous integration and deployment pipelines to ensure 
+                        code quality, frequent releases, and rapid feedback cycles.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="approach-card">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-shield-alt fa-3x text-luphonix"></i>
+                    </div>
+                    <h4 class="text-white text-center mb-3">Security First</h4>
+                    <p class="text-white-75">
+                        We integrate security practices throughout the development lifecycle, from 
+                        architecture design to code reviews and vulnerability scanning.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="approach-card">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-tachometer-alt fa-3x text-luphonix"></i>
+                    </div>
+                    <h4 class="text-white text-center mb-3">Performance Optimization</h4>
+                    <p class="text-white-75">
+                        We continuously optimize application performance through profiling, benchmarking, and 
+                        implementing best practices for front-end and back-end efficiency.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="approach-card">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-universal-access fa-3x text-luphonix"></i>
+                    </div>
+                    <h4 class="text-white text-center mb-3">Accessibility</h4>
+                    <p class="text-white-75">
+                        We design with accessibility in mind, following WCAG guidelines to ensure our 
+                        solutions are usable by people of all abilities.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="approach-card">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-vial fa-3x text-luphonix"></i>
+                    </div>
+                    <h4 class="text-white text-center mb-3">Test-Driven Development</h4>
+                    <p class="text-white-75">
+                        We implement comprehensive testing strategies, including unit, integration, and 
+                        end-to-end tests, to ensure code quality and prevent regressions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cloud Partners Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Cloud Partners</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                    We partner with leading cloud providers to deliver scalable, 
+                    reliable, and cost-effective solutions.
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-center text-center">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="p-4 tech-card d-flex align-items-center justify-content-center" style="height: 120px;">
+                    <i class="fab fa-aws fa-4x text-luphonix"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="p-4 tech-card d-flex align-items-center justify-content-center" style="height: 120px;">
+                    <i class="fab fa-google fa-4x text-luphonix"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="p-4 tech-card d-flex align-items-center justify-content-center" style="height: 120px;">
+                    <i class="fab fa-microsoft fa-4x text-luphonix"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="p-4 tech-card d-flex align-items-center justify-content-center" style="height: 120px;">
+                    <i class="fab fa-digital-ocean fa-4x text-luphonix"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="page-section bg-luphonix-dark">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Let's Build Something Amazing</h2>
+                <div class="divider divider-light"></div>
+                <p class="text-white mb-5">
+                    Ready to leverage our technical expertise for your next project? 
+                    We're eager to discuss how our technologies can help solve your business challenges.
+                </p>
+                <a href="{{ url_for('contact') }}" class="btn btn-light btn-xl">Get in Touch</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

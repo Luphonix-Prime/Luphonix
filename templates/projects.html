@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Projects - Luphonix{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-section-header">
+    <div class="container text-center">
+        <h1 class="text-white">Our Projects</h1>
+        <div class="divider"></div>
+        <p class="text-white-75 w-75 mx-auto">
+            Explore our portfolio of innovative projects that showcase our technical capabilities and creative solutions.
+        </p>
+    </div>
+</section>
+
+<!-- Featured Projects Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Featured Projects</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                    These are some of our most impactful projects that demonstrate our expertise 
+                    across different domains and technologies.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4">
+            {% for project in projects %}
+            <div class="col-lg-4">
+                <div class="featured-project-card h-100">
+                    {% if project.image_url %}
+                    <img src="{{ project.image_url }}" alt="{{ project.name }}" class="img-fluid rounded mb-3">
+                    {% else %}
+                    <div class="project-image-placeholder rounded mb-3"></div>
+                    {% endif %}
+                    <h5 class="text-white">{{ project.name }}</h5>
+                    <p class="text-white-75 mb-3">{{ project.description }}</p>
+                    <div class="tech-tags mb-3">
+                        {% for tech in project.tech_objects %}
+                        <span class="tech-tag">{{ tech.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex">
+                        {% if project.project_url %}
+                        <a href="{{ project.project_url }}" class="btn btn-outline-light btn-sm me-2" target="_blank">
+                            <i class="fas fa-external-link-alt me-1"></i> View Live
+                        </a>
+                        {% endif %}
+                        {% if project.github_repo %}
+                        <a href="https://github.com/{{ project.github_repo }}" class="btn btn-outline-light btn-sm" target="_blank">
+                            <i class="fab fa-github me-1"></i> Source Code
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- GitHub Repositories Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">GitHub Repositories</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                    Check out our latest GitHub repositories that showcase our code quality, 
+                    collaboration, and open-source contributions.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4">
+            {% for repo in github_repos %}
+            <div class="col-lg-4">
+                <div class="github-repo-card h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fab fa-github fa-2x text-luphonix me-3"></i>
+                        <h5 class="text-white mb-0">{{ repo.name }}</h5>
+                    </div>
+                    <p class="text-white-75 repo-description mb-3">{{ repo.description }}</p>
+                    <div class="d-flex mb-3">
+                        <span class="me-3 text-white-75"><i class="fas fa-code me-1"></i> {{ repo.language }}</span>
+                        <span class="me-3 text-white-75"><i class="fas fa-star me-1"></i> {{ repo.stars }}</span>
+                        <span class="text-white-75"><i class="fas fa-code-branch me-1"></i> {{ repo.forks }}</span>
+                    </div>
+                    <a href="{{ repo.url }}" class="btn btn-outline-light btn-sm" target="_blank">
+                        <i class="fas fa-external-link-alt me-1"></i> View Repository
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="https://github.com/Luphonix-Prime" class="btn btn-outline-light btn-lg" target="_blank">
+                    <i class="fab fa-github me-2"></i> View All Repositories
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Project Process Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Our Project Process</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                    Our structured approach to project development ensures efficiency, 
+                    quality, and successful outcomes for our clients.
+                </p>
+            </div>
+        </div>
+        <div class="process-timeline">
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-comments text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Initial Consultation</h4>
+                    <p class="text-white-75 mb-0">We start by understanding your vision, requirements, and business objectives through detailed discussions.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-search text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Research & Analysis</h4>
+                    <p class="text-white-75 mb-0">We analyze your industry, competitors, and target audience to inform our strategy and approach.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-sitemap text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Architecture Planning</h4>
+                    <p class="text-white-75 mb-0">We design a technical architecture that's scalable, secure, and optimized for your specific needs.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-pencil-ruler text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">UI/UX Design</h4>
+                    <p class="text-white-75 mb-0">Our designers create intuitive, engaging interfaces that enhance user experience and align with your brand.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-code text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Development</h4>
+                    <p class="text-white-75 mb-0">Our developers use modern technologies and best practices to build your solution with clean, efficient code.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-vial text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Testing & QA</h4>
+                    <p class="text-white-75 mb-0">We conduct thorough testing across different devices and scenarios to ensure reliability and performance.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-rocket text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Deployment</h4>
+                    <p class="text-white-75 mb-0">We handle the deployment process, ensuring a smooth transition to the production environment.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-life-ring text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Support & Maintenance</h4>
+                    <p class="text-white-75 mb-0">We provide ongoing support, updates, and optimizations to keep your solution running smoothly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="page-section bg-luphonix-dark">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white">Start Your Project Today</h2>
+                <div class="divider divider-light"></div>
+                <p class="text-white mb-5">
+                    Ready to transform your idea into reality? Let's discuss how we can help bring your vision to life with our expertise.
+                </p>
+                <a href="{{ url_for('contact') }}" class="btn btn-light btn-xl">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

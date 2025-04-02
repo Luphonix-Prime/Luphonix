@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Luphonix{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-section-header">
+    <div class="container text-center">
+        <h1 class="text-white">Contact Us</h1>
+        <div class="divider"></div>
+        <p class="text-white-75 w-75 mx-auto">
+            We'd love to hear from you! Whether you have a question about our services, 
+            want to discuss a potential project, or just want to say hello, we're here to help.
+        </p>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="page-section">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <h3 class="text-white mb-4">Send Us a Message</h3>
+                    <div id="auth-warning" class="alert alert-warning mb-4 d-none">
+                        Please <a href="{{ url_for('login') }}" class="alert-link">sign in with GitHub</a> to send us a message.
+                    </div>
+                    <form id="contact-form" class="needs-validation" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                    <label for="name">Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required readonly>
+                                    <label for="email">Your Email</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                                    <label for="subject">Subject</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Your Message" style="height: 150px" required></textarea>
+                                    <label for="message">Your Message</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg w-100" id="submit-btn" disabled>
+                                    <i class="fas fa-paper-plane me-2"></i> Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <h3 class="text-white mb-4">Get in Touch</h3>
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-map-marker-alt fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Location</h5>
+                            <p class="text-white-75 mb-0">AHMEDABAD<br> GUJRAT</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-envelope fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Email</h5>
+                            <p class="text-white-75 mb-0">luphonix.prime@gmail.com<br>support@luphonix.com</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-phone-alt fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Phone</h5>
+                            <p class="text-white-75 mb-0">+91 97377 94277<br>+91 97254 87298</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <i class="fas fa-clock fa-2x text-luphonix"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white">Business Hours</h5>
+                            <p class="text-white-75 mb-0">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday & Sunday: Closed</p>
+                        </div>
+                    </div>
+                    <hr class="divider my-4">
+                    <h5 class="text-white text-center mb-3">Follow Us</h5>
+                    <div class="social-links-large mb-0">
+                        <a class="social-link-large" href="https://github.com/Luphonix-Prime" target="_blank"><i class="fab fa-github"></i></a>
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a class="social-link-large" href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% block scripts %}
+<script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const SUPABASE_URL = "{{ supabase_url }}";
+    const SUPABASE_ANON_KEY = "{{ supabase_key }}";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        const form = document.getElementById("contact-form");
+        const submitBtn = document.getElementById("submit-btn");
+        const authWarning = document.getElementById("auth-warning");
+        const emailInput = document.getElementById("email");
+
+        // Session check and form handling
+        async function checkUserSession() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+
+            if (error) {
+                console.error("Error checking session:", error.message);
+                return;
+            }
+
+            if (!session) {
+                authWarning.classList.remove("d-none");
+                submitBtn.disabled = true;
+                emailInput.value = "";
+                form.classList.add("form-disabled");
+            } else {
+                authWarning.classList.add("d-none");
+                submitBtn.disabled = false;
+                emailInput.value = session.user.email;
+                form.classList.remove("form-disabled");
+            }
+        }
+
+        await checkUserSession();
+
+        supabase.auth.onAuthStateChange((event, session) => {
+            checkUserSession();
+        });
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Please sign in to send a message.");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sending...';
+
+            const formData = {
+                name: document.getElementById("name").value,
+                email: session.user.email,
+                subject: document.getElementById("subject").value,
+                message: document.getElementById("message").value,
+                created_at: new Date().toISOString(),
+                user_id: session.user.id
+            };
+
+            try {
+                const response = await fetch("{{ url_for('contact') }}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.message);
+
+                alert("Message sent successfully! Please check your email for confirmation.");
+                form.reset();
+                emailInput.value = session.user.email;
+            } catch (error) {
+                console.error("Error sending message:", error);
+                alert("Failed to send message. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Send Message';
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .form-disabled input:not([readonly]),
+    .form-disabled textarea {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        cursor: not-allowed;
+    }
+    
+    .form-disabled input:not([readonly]):focus,
+    .form-disabled textarea:focus {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        box-shadow: none !important;
+    }
+</style>
+{% endblock %}
+
+{% endblock %}

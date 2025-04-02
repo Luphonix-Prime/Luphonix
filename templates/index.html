@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}Luphonix - Innovative Tech Solutions{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <img src="{{ url_for('static', filename='blue_phoenix_logo.jpg') }}" alt="Luphonix Logo" class="hero-logo mb-4" width="150">
+                <h1 class="hero-title">WElcome to Luphonix</h1>
+                <div class="divider divider-light"></div>
+                <p class="hero-subtitle mb-5">Creating innovative solutions for tomorrow's challenges</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary btn-xl cta-button">Get in Touch</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="page-section" id="about">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white mt-0">We've got what you need</h2>
+                <div class="divider"></div>
+                <p class="text-white-75 mb-4">
+                    Luphonix specializes in developing cutting-edge technology solutions that help businesses transform their digital presence. 
+                    Our team of experts combines technical excellence with creative innovation to deliver exceptional results.
+                </p>
+                <a class="btn btn-primary btn-xl" href="{{ url_for('projects') }}">View Our Projects</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="page-section" id="team">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white mt-0">Our Team</h2>
+                <div class="divider"></div>
+                <p class="text-white-75 mb-5">
+                    Meet the talented individuals who make our company successful. Our diverse team brings 
+                    together expertise in various technical domains to deliver comprehensive solutions.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4">
+            {% for member in team_members %}
+            <div class="col-lg-3 col-md-6">
+                <div class="team-card text-center">
+                    {% if member.image_url %}
+                    <img src="{{ member.image_url }}" alt="{{ member.name }}" class="rounded-circle mb-3" width="150" height="150">
+                    {% else %}
+                    <div class="team-image-placeholder rounded-circle mb-3 mx-auto"></div>
+                    {% endif %}
+                    <h5 class="text-white">{{ member.name }}</h5>
+                    <p class="text-luphonix mb-2">{{ member.position }}</p>
+                    <p class="text-white-75 small">{{ member.bio }}</p>
+                    <div class="social-links">
+                        {% if member.linkedin %}
+                        <a href="{{ member.linkedin }}" class="social-icon" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        {% endif %}
+                        {% if member.github %}
+                        <a href="{{ member.github }}" class="social-icon" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        {% endif %}
+                        {% if member.twitter %}
+                        <a href="{{ member.twitter }}" class="social-icon" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('team') }}" class="btn btn-outline-light btn-lg">View All Team Members</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technologies Section -->
+<section class="page-section" id="technologies">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white mt-0">Our Technologies</h2>
+                <div class="divider"></div>
+                <p class="text-white-75 mb-5">
+                    We leverage the latest technologies to build powerful, scalable, and efficient solutions
+                    that meet the unique needs of our clients.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4">
+            {% for tech in technologies %}
+            <div class="col-lg-3 col-md-6">
+                <div class="tech-card text-center">
+                    <div class="mb-4">
+                        <i class="{{ tech.icon_class }} fa-3x text-luphonix tech-icon"></i>
+                    </div>
+                    <h5 class="text-white">{{ tech.name }}</h5>
+                    <p class="text-white-75 mb-0">{{ tech.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('technologies') }}" class="btn btn-outline-light btn-lg">View All Technologies</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Process Section -->
+<section class="page-section" id="process">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white mt-0">Our Process</h2>
+                <div class="divider"></div>
+                <p class="text-white-75 mb-5">
+                    Our proven development process ensures quality results, transparent communication,
+                    and timely delivery for every project.
+                </p>
+            </div>
+        </div>
+        <div class="process-timeline">
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-lightbulb text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Discovery</h4>
+                    <p class="text-white-75 mb-0">We begin by understanding your business objectives, target audience, and project requirements to lay a solid foundation.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-pencil-ruler text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Planning & Design</h4>
+                    <p class="text-white-75 mb-0">Our team creates detailed specifications and designs that serve as the blueprint for development.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-code text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Development</h4>
+                    <p class="text-white-75 mb-0">Our developers bring the designs to life, writing clean, efficient code using the most appropriate technologies.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-vial text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Testing</h4>
+                    <p class="text-white-75 mb-0">Rigorous quality assurance testing ensures your product functions flawlessly across all platforms and devices.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-rocket text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Deployment</h4>
+                    <p class="text-white-75 mb-0">We carefully launch your product, ensuring a smooth transition to the live environment.</p>
+                </div>
+            </div>
+            <div class="process-item">
+                <div class="process-icon">
+                    <i class="fas fa-wrench text-luphonix"></i>
+                </div>
+                <div class="process-content">
+                    <h4 class="text-white">Maintenance & Support</h4>
+                    <p class="text-white-75 mb-0">Our relationship continues after launch with ongoing support and optimization to keep your product at peak performance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Projects Section -->
+<section class="page-section" id="projects">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white mt-0">Featured Projects</h2>
+                <div class="divider"></div>
+                <p class="text-white-75 mb-5">
+                    Take a look at some of our recent work that demonstrates our capabilities and expertise.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4">
+            {% for project in featured_projects %}
+            <div class="col-lg-4">
+                <div class="featured-project-card h-100">
+                    {% if project.image_url %}
+                    <img src="{{ project.image_url }}" alt="{{ project.name }}" class="img-fluid rounded mb-3">
+                    {% else %}
+                    <div class="project-image-placeholder rounded mb-3"></div>
+                    {% endif %}
+                    <h5 class="text-white">{{ project.name }}</h5>
+                    <p class="text-white-75 mb-3">{{ project.description }}</p>
+                    <div class="tech-tags mb-3">
+                        {% for tech in project.tech_objects %}
+                        <span class="tech-tag">{{ tech.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex">
+                        {% if project.project_url %}
+                        <a href="{{ project.project_url }}" class="btn btn-outline-light btn-sm me-2" target="_blank">
+                            <i class="fas fa-external-link-alt me-1"></i> View Live
+                        </a>
+                        {% endif %}
+                        {% if project.github_repo %}
+                        <a href="https://github.com/{{ project.github_repo }}" class="btn btn-outline-light btn-sm" target="_blank">
+                            <i class="fab fa-github me-1"></i> Source Code
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('projects') }}" class="btn btn-outline-light btn-lg">View All Projects</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact CTA Section -->
+<section class="page-section bg-luphonix-dark" id="contact-cta">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="text-white mt-0">Ready to Start Your Project?</h2>
+                <div class="divider divider-light"></div>
+                <p class="text-white mb-5">
+                    Let's discuss how we can help bring your ideas to life. Contact us today to schedule a consultation 
+                    with our team of experts.
+                </p>
+                <a href="{{ url_for('contact') }}" class="btn btn-light btn-xl">Contact Us Now</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function getCookie(name) {
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+        let c = cookies[i].trim();
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+console.log("Stored Cookie:", getCookie("supabase_token"));
+</script>
+{% endblock %}
