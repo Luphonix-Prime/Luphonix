@@ -394,7 +394,7 @@ def send_feedback_email(user_email, name, subject):
         
         <p style="color: #fff;">At Luphonix, we are committed to delivering innovative solutions and ensuring the best customer experience. Our team will review your request and get back to you shortly.</p>
         
-        <p style="color: #fff;">If you have any urgent queries or need further assistance, feel free to contact us at <span style="color: #00c3ff;">{contact_info}</span>.</p>
+        <p style="color: #fff;">If you have any urgent queries or need further assistance, feel free to contact us at <span style="color: #00c3ff;"></span>.</p>
         
         <p style="color: #fff;">We look forward to assisting you and hope to make a positive impact together!</p>
         
