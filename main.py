@@ -402,7 +402,7 @@ def send_feedback_email(user_email, name, subject):
         <div style="color: #fff;display: flex; align-items: center; justify-content: flex-start; margin-top: 20px;">
             <div style="flex: 1;">
                 <p style="margin: 0;">Warm regards,<br>The Luphonix Team<br>
-                <span style="font-size: 0.9em;">Dhyey and Team</span></p>
+                <span style="font-size: 0.9em;"></span></p>
             </div>
             <div style="flex: 0 0 70px; margin-left: 15px;">
                 <img src="blue_phoenix_logo.jpg" alt="Luphonix Logo" style="width: 70px;">
