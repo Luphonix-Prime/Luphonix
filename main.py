@@ -368,23 +368,67 @@ def send_feedback_email(user_email, name, subject):
             recipients=[user_email]
         )
         msg.html = f'''
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #000; padding: 20px; text-align: center;">
-                    <h1 style="color: #00c3ff; margin: 0;">Thank You!</h1>
-                </div>
-                <div style="padding: 20px; background-color: #f9f9f9;">
-                    <p>Dear {name},</p>
-                    <p>Thank you for reaching out to us regarding "<strong>{subject}</strong>". 
-                    We have received your message and appreciate you taking the time to contact us.</p>
-                    <p>Our team will review your inquiry and get back to you as soon as possible. 
-                    We typically respond within 24-48 business hours.</p>
-                    <p>Best regards,<br>The Luphonix Team</p>
-                </div>
-                <div style="text-align: center; padding: 20px; color: #666;">
-                    <p>© 2025 Luphonix. All rights reserved.</p>
-                    <p>AHMEDABAD, GUJARAT</p>
-                </div>
+
+        
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
+    <!-- Animated infinity symbol -->
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;">
+        <style>
+            @keyframes drawInfinity {
+                0% { stroke-dashoffset: 1000; }
+                100% { stroke-dashoffset: 0; }
+            }
+            .infinity-path {
+                stroke: #00c3ff;
+                stroke-width: 3;
+                fill: none;
+                stroke-dasharray: 1000;
+                stroke-dashoffset: 1000;
+                animation: drawInfinity 2s linear infinite;
+                filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.5));
+            }
+        </style>
+        <svg viewBox="0 0 100 60" style="width: 100%; height: 100%; opacity: 100%;">
+            <path class="infinity-path" d="M25,30 C25,15 35,15 50,30 C65,45 75,45 75,30 C75,15 65,15 50,30 C35,45 25,45 25,30"/>
+        </svg>
+    </div>
+
+    <!-- Rest of your content remains the same -->
+    <div style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; text-align: center; position: relative;">
+        <h1 style="color: #00c3ff; margin: 0; position: relative; z-index: 2; text-shadow: 0 0 10px rgba(0, 195, 255, 0.5);">Thank You!</h1>
+    </div>
+    
+    <div style="padding: 20px; background-color: rgba(0, 0, 0, 0.7); position: relative; z-index: 1; border-radius: 10px;">
+        <h2 style="text-align: center; color: #00c3ff;">Luphonix</h2>
+        <p style="text-align: center; font-style: italic; color: #fff;">Innovating for a Better Tomorrow</p>
+        
+        <p style="color: #fff;">Dear {name},</p>
+        
+        <p style="color: #fff;">Thank you for reaching out to us through our website! We truly appreciate your interest and the time you took to share your details. Your submission has been successfully received.</p>
+        
+        <p style="color: #fff;">At Luphonix, we are committed to delivering innovative solutions and ensuring the best customer experience. Our team will review your request and get back to you shortly.</p>
+        
+        <p style="color: #fff;">If you have any urgent queries or need further assistance, feel free to contact us at <span style="color: #00c3ff;">{contact_info}</span>.</p>
+        
+        <p style="color: #fff;">We look forward to assisting you and hope to make a positive impact together!</p>
+        
+        <!-- Team signature with logo positioned to the side -->
+        <div style="color: #fff;display: flex; align-items: center; justify-content: flex-start; margin-top: 20px;">
+            <div style="flex: 1;">
+                <p style="margin: 0;">Warm regards,<br>The Luphonix Team<br>
+                <span style="font-size: 0.9em;">Dhyey and Team</span></p>
             </div>
+            <div style="flex: 0 0 70px; margin-left: 15px;">
+                <img src="blue_phoenix_logo.jpg" alt="Luphonix Logo" style="width: 70px;">
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; padding: 20px; color: #9a9797; position: relative; z-index: 1;">
+        <p>© 2025 Luphonix. All rights reserved.</p>
+        <p>AHMEDABAD, GUJARAT</p>
+    </div>
+</div>
         '''
         mail.send(msg)
         logging.info(f"Feedback email sent successfully to {user_email}")
