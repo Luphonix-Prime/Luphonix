@@ -370,7 +370,7 @@ def send_feedback_email(user_email, name, subject):
         msg.html = f'''
      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; background-color: #000;">
     <!-- Background infinity symbol -->
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; background-image: url('https://github.com/Luphonix-Prime/Luphonix/blob/latest-branch/loop.gif'); background-size: contain; background-position: center; background-repeat: no-repeat; opacity: 0.85; z-index: 0;"></div>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; background-image: url('https://ik.imagekit.io/nzsjpnm8w/loop.gif?updatedAt=1743683898622'); background-size: contain; background-position: center; background-repeat: no-repeat; opacity: 0.85; z-index: 0;"></div>
     <!-- Animated infinity symbol -->
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;">
         <svg viewBox="0 0 100 60" style="width: 100%; height: 100%; opacity: 0.2;">
@@ -404,7 +404,7 @@ def send_feedback_email(user_email, name, subject):
                 <span style="font-size: 0.9em;"></span></p>
             </div>
             <div style="flex: 0 0 70px; margin-left: 15px;">
-                <img src="https://github.com/Luphonix-Prime/Luphonix/blob/latest-branch/blue_phoenix_logo.jpg" alt="Luphonix Logo" style="width: 70px;">
+                <img src="https://ik.imagekit.io/nzsjpnm8w/blue_phoenix_logo.jpg?updatedAt=1743683879054" alt="Luphonix Logo" style="width: 70px;">
             </div>
         </div>
     </div>
