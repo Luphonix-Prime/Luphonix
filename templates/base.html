@@ -62,6 +62,7 @@
                     <li class="nav-item d-none" id="user-profile-item">
                         <span class="nav-link text-white">
                             <img id="user-avatar" src="" alt="Profile" class="rounded-circle me-2" style="width: 24px; height: 24px;">
+                            <i id="provider-icon" class="me-1"></i>
                             <span id="user-name"></span>
                         </span>
                     </li>
@@ -162,6 +163,7 @@
 
                 // Get avatar URL based on provider
                 let avatarUrl = '';
+
                 if (session.user.user_metadata?.avatar_url) {
                     avatarUrl = session.user.user_metadata.avatar_url;
                 } else if (session.user.user_metadata?.picture) {
@@ -188,6 +190,58 @@
                 logoutItem.classList.add('d-none');
             }
         }
+
+        const providerIcon = document.getElementById('provider-icon');
+
+            if (session && session.user) {
+                // User is logged in
+                loginItem.classList.add('d-none');
+                userProfileItem.classList.remove('d-none');
+                logoutItem.classList.remove('d-none');
+
+                // Get provider from user metadata
+                const provider = session.user.app_metadata?.provider || 'unknown';
+                
+                // Set provider icon
+                const providerIcons = {
+                    github: 'fab fa-github',
+                    google: 'fab fa-google',
+                    discord: 'fab fa-discord',
+                    linkedin_oidc: 'fab fa-linkedin',
+                    twitter_legacy: 'fab fa-twitter',
+                    unknown: 'fas fa-user'
+                };
+
+                providerIcon.className = providerIcons[provider] || providerIcons.unknown;
+
+                // Update user profile
+                userName.textContent = session.user.email;
+                if (session.user.user_metadata?.avatar_url) {
+                    avatarUrl = session.user.user_metadata.avatar_url;
+                } else if (session.user.user_metadata?.picture) {
+                    avatarUrl = session.user.user_metadata.picture;
+                } else if (session.user.user_metadata?.avatar) {
+                    avatarUrl = session.user.user_metadata.avatar;
+                }
+
+                // Set default avatar if none is provided
+                if (!avatarUrl) {
+                    avatarUrl = "{{ url_for('static', filename='default-avatar.png') }}";
+                }
+
+                // Update user profile
+                userAvatar.src = avatarUrl;
+                userName.textContent = session.user.user_metadata?.full_name || 
+                                    session.user.user_metadata?.name || 
+                                    session.user.user_metadata?.user_name || 
+                                    session.user.email;
+            } else {
+                // User is logged out
+                loginItem.classList.remove('d-none');
+                userProfileItem.classList.add('d-none');
+                logoutItem.classList.add('d-none');
+            }
+        
 
         // Handle logout
         document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
