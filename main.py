@@ -26,8 +26,8 @@ app.secret_key = os.environ.get("SESSION_SECRET", "luphonix-secret-key")
 
 # Supabase configuration - will be passed to client-side
 
-SUPABASE_URL = os.getenv("SUPABASE_URL","https://vsccadraatbavvnqqmxc.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzY2NhZHJhYXRiYXZ2bnFxbXhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4ODAzNzAsImV4cCI6MjA1ODQ1NjM3MH0.o_wcEuyRYhicR7i47CeDyJwWeUCTAUwzRAsqgFUpBEs")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
@@ -343,18 +343,18 @@ logging.basicConfig(level=logging.INFO)
 
 
 app.config.update(
-    MAIL_SERVER=os.getenv('MAIL_SERVER',"smtp.gmail.com"),
-    MAIL_PORT=int(os.getenv('MAIL_PORT',"587")),
-    MAIL_USE_TLS=os.getenv('MAIL_USE_TLS',"True").lower() == 'true',
-    MAIL_USE_SSL=os.getenv('MAIL_USE_SSL',"True").lower() == 'true',
-    MAIL_USERNAME=os.getenv('MAIL_USERNAME',"dhyey2112004@gmail.com"),
-    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD',"eqhi vmtd ceog oydl"),
+    MAIL_SERVER=os.getenv('MAIL_SERVER'),
+    MAIL_PORT=int(os.getenv('MAIL_PORT')),
+    MAIL_USE_TLS=os.getenv('MAIL_USE_TLS').lower() == 'true',
+    MAIL_USE_SSL=os.getenv('MAIL_USE_SSL').lower() == 'true',
+    MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
+    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD'),
     MAIL_DEFAULT_SENDER=(
-        os.getenv('MAIL_SENDER_NAME',"Luphonix Prime"),
-        os.getenv('MAIL_SENDER_EMAIL',"dhyey2112004@gmail.com ")
+        os.getenv('MAIL_SENDER_NAME'),
+        os.getenv('MAIL_SENDER_EMAIL')
     ),
     MAIL_MAX_EMAILS=None,
-    MAIL_DEBUG=os.getenv('MAIL_DEBUG',"TRUE").lower() == 'true'
+    MAIL_DEBUG=os.getenv('MAIL_DEBUG').lower() == 'true'
 )
 
 # Initialize mail
