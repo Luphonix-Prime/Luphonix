@@ -44,9 +44,9 @@
                 .upsert({
                     id: user.id,
                     email: user.email,
-                    username: user.user_metadata?.user_name || user.email,
+                    username: user.user_metadata?.user_name || user.user_metadata?.full_name || user.email,
                     avatar_url: user.user_metadata?.avatar_url,
-                    provider: 'github',
+                    provider: user.app_metadata?.provider || 'unknown',
                     last_sign_in: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 }, {
@@ -92,16 +92,36 @@
 
     // Login function with session storage
     async function login(provider) {
+        const scopes = {
+            github: 'read:user user:email',
+            linkedin: 'openid profile email',
+            google: 'profile email',
+            discord: 'identify email',
+            twitter: 'offline.access tweet.read users.read'
+        };
+
+        let providerName = provider;
+        if (provider === 'twitter') {
+            providerName = 'twitter_legacy';  // Use twitter_legacy for Twitter OAuth 1.0a
+        } else if (provider === 'linkedin') {
+            providerName = 'linkedin_oidc';
+        }
+
         const { error } = await supabase.auth.signInWithOAuth({
-            provider,
+            provider: providerName,
             options: {
-                redirectTo: window.location.origin + "/contact", // Redirect user after login
-                scopes: 'read:user user:email' // GitHub specific scopes
+                redirectTo: window.location.origin + "/contact",
+                scopes: scopes[provider] || '',
+                queryParams: provider === 'twitter' ? {
+                    'auth_type': 'reauthenticate'
+                } : {}
             }
         });
 
         if (error) {
             console.error(`${provider} Login Error:`, error.message);
+            document.getElementById("user-info").innerText = `Login failed: ${error.message}`;
+            document.getElementById("user-info").style.color = "#ff4444";
         }
     }
 
@@ -113,13 +133,20 @@
     }
 
     // Page Load Operations
-    window.onload = async function () {
+    document.addEventListener("DOMContentLoaded", async function () {
         await restoreSession(); // Restore session from sessionStorage
         await checkUserSession(); // Check if user is logged in
 
+        // Add event listeners to buttons
         document.getElementById("github-login").addEventListener("click", () => login("github"));
+        document.getElementById("google-login").addEventListener("click", () => login("google"));
+        document.getElementById("discord-login").addEventListener("click", () => login("discord"));
+        document.getElementById("linkedin-login").addEventListener("click", () => login("linkedin"));
+        document.getElementById("twitter-login").addEventListener("click", () => login("twitter"));
         document.getElementById("logout-btn").addEventListener("click", logout);
-    };
+    });
+
+    // Remove the window.onload function since we're using DOMContentLoaded
 </script>
 
 <div class="login-page">
@@ -130,9 +157,30 @@
                     <img src="{{ url_for('static', filename='new.png') }}" alt="Luphonix Logo" class="login-logo mx-auto d-block">
                     <h2 class="text-white mb-4">Sign In</h2>
                     <p class="text-white-75 mb-4">Sign in to access exclusive features and content.</p>
-                    <button id="github-login" class="login-btn github-sign-in mb-3" style="background-color: #333;">
+                    
+                    <button id="github-login" class="login-btn github-sign-in mb-3">
                         <i class="fab fa-github" style="font-size: 24px; margin-right: 10px;"></i>
                         Sign in with GitHub
+                    </button>
+
+                    <button id="google-login" class="login-btn google-sign-in mb-3">
+                        <i class="fab fa-google" style="font-size: 24px; margin-right: 10px;"></i>
+                        Sign in with Google
+                    </button>
+
+                    <button id="discord-login" class="login-btn discord-sign-in mb-3">
+                        <i class="fab fa-discord" style="font-size: 24px; margin-right: 10px;"></i>
+                        Sign in with Discord
+                    </button>
+
+                    <button id="linkedin-login" class="login-btn linkedin-sign-in mb-3">
+                        <i class="fab fa-linkedin" style="font-size: 24px; margin-right: 10px;"></i>
+                        Sign in with LinkedIn
+                    </button>
+
+                    <button id="twitter-login" class="login-btn twitter-sign-in mb-3">
+                        <i class="fab fa-twitter" style="font-size: 24px; margin-right: 10px;"></i>
+                        Sign in with Twitter
                     </button>
                     <hr class="divider mt-4">
                     <p class="text-white-75">Don't have an account? Sign in with GitHub to register.</p>
@@ -145,3 +193,44 @@
 </div>
 
 {% endblock %}
+
+<style>
+    .login-btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .github-sign-in {
+        background-color: #333;
+    }
+
+    .google-sign-in {
+        background-color: #DB4437;
+    }
+
+    .discord-sign-in {
+        background-color: #7289DA;
+    }
+
+    .linkedin-sign-in {
+        background-color: #0077B5;
+    }
+
+    .twitter-sign-in {
+        background-color: #1DA1F2;
+    }
+</style>
