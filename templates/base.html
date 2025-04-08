@@ -160,11 +160,27 @@
                 userProfileItem.classList.remove('d-none');
                 logoutItem.classList.remove('d-none');
 
-                // Update user profile
-                userName.textContent = session.user.email;
+                // Get avatar URL based on provider
+                let avatarUrl = '';
                 if (session.user.user_metadata?.avatar_url) {
-                    userAvatar.src = session.user.user_metadata.avatar_url;
+                    avatarUrl = session.user.user_metadata.avatar_url;
+                } else if (session.user.user_metadata?.picture) {
+                    avatarUrl = session.user.user_metadata.picture;
+                } else if (session.user.user_metadata?.avatar) {
+                    avatarUrl = session.user.user_metadata.avatar;
                 }
+
+                // Set default avatar if none is provided
+                if (!avatarUrl) {
+                    avatarUrl = "{{ url_for('static', filename='default-avatar.png') }}";
+                }
+
+                // Update user profile
+                userAvatar.src = avatarUrl;
+                userName.textContent = session.user.user_metadata?.full_name || 
+                                    session.user.user_metadata?.name || 
+                                    session.user.user_metadata?.user_name || 
+                                    session.user.email;
             } else {
                 // User is logged out
                 loginItem.classList.remove('d-none');
