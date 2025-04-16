@@ -197,33 +197,27 @@ def get_technologies_for_project(project):
     return project_techs
 
 def get_github_repositories(username="Luphonix-Prime", limit=6):
-    """
-    Fetch repositories from GitHub API
-    
-    Args:
-        username: GitHub username to fetch repositories from
-        limit: Maximum number of repositories to fetch
-        
-    Returns:
-        list: List of repositories or empty list if error occurs
-    """
     try:
-        # Make request to GitHub API
         url = f'https://api.github.com/users/{username}/repos'
         params = {
             'sort': 'updated',
             'direction': 'desc',
-            'per_page': limit
+            'per_page': limit + 10  # Increased buffer for filtering
         }
         
         response = requests.get(url, params=params)
         response.raise_for_status()
         
-        repos = response.json()
-        
-        # Process repositories to extract needed information
+        # Filter out .github repositories and process remaining repos
         processed_repos = []
-        for repo in repos:
+        for repo in response.json():
+            # Skip .github repositories and other special repos
+            if (repo['name'].lower().startswith('.github') or 
+                '.github' in repo['name'].lower() or 
+                repo.get('is_template', False) or 
+                repo.get('archived', False)):
+                continue
+                
             processed_repos.append({
                 'name': repo['name'],
                 'description': repo['description'] or "No description available",
@@ -233,6 +227,9 @@ def get_github_repositories(username="Luphonix-Prime", limit=6):
                 'language': repo['language'] or "Not specified",
                 'updated_at': repo['updated_at'],
             })
+            
+            if len(processed_repos) >= limit:
+                break
         
         return processed_repos
         
@@ -465,9 +462,20 @@ def get_github_repositories(username="Luphonix-Prime", limit=6):
 
 def get_projects_from_github(username="Luphonix-Prime"):
     try:
-        repos = get_github_repositories(username)
+        # Get filtered repositories (already excludes .github repos)
+        all_repos = get_github_repositories(username, limit=10)
         projects = []
-        for i, repo in enumerate(repos, 1):
+        
+        headers = {
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        
+        for i, repo in enumerate(all_repos, 1):
+            # Skip .github repositories (additional check)
+            if '.github' in repo['name'].lower():
+                continue
+                
             # Get deployment info
             headers = {
                 "Authorization": f"Bearer {GITHUB_TOKEN}",
