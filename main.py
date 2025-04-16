@@ -149,38 +149,226 @@ TECHNOLOGIES = [
     }
 ]
 
-PROJECTS = [
+# PROJECTS = [
+#     {
+#         "id": "1",
+#         "name": "CloudSync Platform",
+#         "description": "A scalable cloud synchronization platform for enterprise data management with real-time collaboration features.",
+#         "image_url": None,
+#         "project_url": "https://example.com/cloudsync",
+#         "github_repo": "luphonix/cloud-sync",
+#         "technologies": ["1", "2", "4", "6"],
+#         "order": 1
+#     },
+#     {
+#         "id": "2", 
+#         "name": "EcoTrack Mobile App",
+#         "description": "Mobile application for tracking and reducing carbon footprint with gamification elements to encourage sustainable behaviors.",
+#         "image_url": None,
+#         "project_url": "https://example.com/ecotrack",
+#         "github_repo": "luphonix/eco-track",
+#         "technologies": ["3", "5", "8"],
+#         "order": 2
+#     },
+#     {
+#         "id": "3",
+#         "name": "DataViz Dashboard",
+#         "description": "Interactive data visualization dashboard for business analytics with customizable widgets and real-time updates.",
+#         "image_url": None,
+#         "project_url": "https://example.com/dataviz",
+#         "github_repo": "luphonix/data-viz",
+#         "technologies": ["1", "3", "5", "7"],
+#         "order": 3
+#     }
+# ]
+
+def get_technology_by_id(tech_id):
+    for tech in TECHNOLOGIES:
+        if tech["id"] == tech_id:
+            return tech
+    return None
+
+def get_technologies_for_project(project):
+    project_techs = []
+    for tech_id in project["technologies"]:
+        tech = get_technology_by_id(tech_id)
+        if tech:
+            project_techs.append(tech)
+    return project_techs
+
+def get_github_repositories(username="Luphonix-Prime", limit=6):
+    try:
+        url = f'https://api.github.com/users/{username}/repos'
+        params = {
+            'sort': 'updated',
+            'direction': 'desc',
+            'per_page': limit + 10  # Increased buffer for filtering
+        }
+        
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        
+        # Filter out .github repositories and process remaining repos
+        processed_repos = []
+        for repo in response.json():
+            # Skip .github repositories and other special repos
+            if (repo['name'].lower().startswith('.github') or 
+                '.github' in repo['name'].lower() or 
+                repo.get('is_template', False) or 
+                repo.get('archived', False)):
+                continue
+                
+            processed_repos.append({
+                'name': repo['name'],
+                'description': repo['description'] or "No description available",
+                'url': repo['html_url'],
+                'stars': repo['stargazers_count'],
+                'forks': repo['forks_count'],
+                'language': repo['language'] or "Not specified",
+                'updated_at': repo['updated_at'],
+            })
+            
+            if len(processed_repos) >= limit:
+                break
+        
+        return processed_repos
+        
+    except requests.exceptions.RequestException as e:
+        print(f"GitHub API error: {str(e)}")
+        # Fetch from organization instead of static data
+        try:
+            org_url = f"https://api.github.com/orgs/Luphonix-Prime/repos"
+            headers = {
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github.v3+json"
+            }
+            org_response = requests.get(org_url, headers=headers)
+            org_response.raise_for_status()
+            org_repos = org_response.json()
+            
+            processed_repos = []
+            for repo in org_repos[:limit]:  # Respect the limit parameter
+                # Get repository details including homepage URL
+                repo_url = repo['url']
+                repo_response = requests.get(repo_url, headers=headers)
+                repo_data = repo_response.json()
+                
+                processed_repos.append({
+                    'name': repo['name'],
+                    'description': repo['description'] or "No description available",
+                    'url': repo['html_url'],
+                    'homepage': repo_data.get('homepage'),
+                    'stars': repo['stargazers_count'],
+                    'forks': repo['forks_count'],
+                    'language': repo['language'] or "Not specified",
+                    'updated_at': repo['updated_at'],
+                })
+            
+            return processed_repos
+            
+        except Exception as e:
+            print(f"Fallback GitHub API error: {str(e)}")
+            return []  # Return empty list if both attempts fail
+
+TECHNOLOGIES = [
     {
         "id": "1",
-        "name": "CloudSync Platform",
-        "description": "A scalable cloud synchronization platform for enterprise data management with real-time collaboration features.",
-        "image_url": None,
-        "project_url": "https://example.com/cloudsync",
-        "github_repo": "luphonix/cloud-sync",
-        "technologies": ["1", "2", "4", "6"],
+        "name": "React",
+        "category": "frontend",
+        "description": "Building responsive and interactive user interfaces",
+        "icon_class": "fab fa-react",
         "order": 1
     },
     {
-        "id": "2", 
-        "name": "EcoTrack Mobile App",
-        "description": "Mobile application for tracking and reducing carbon footprint with gamification elements to encourage sustainable behaviors.",
-        "image_url": None,
-        "project_url": "https://example.com/ecotrack",
-        "github_repo": "luphonix/eco-track",
-        "technologies": ["3", "5", "8"],
-        "order": 2
+        "id": "2",
+        "name": "Node.js",
+        "category": "backend",
+        "description": "Server-side JavaScript runtime environment",
+        "icon_class": "fab fa-node-js",
+        "order": 1
     },
     {
         "id": "3",
-        "name": "DataViz Dashboard",
-        "description": "Interactive data visualization dashboard for business analytics with customizable widgets and real-time updates.",
-        "image_url": None,
-        "project_url": "https://example.com/dataviz",
-        "github_repo": "luphonix/data-viz",
-        "technologies": ["1", "3", "5", "7"],
+        "name": "Python",
+        "category": "backend",
+        "description": "Versatile language for web development, data analysis, and AI",
+        "icon_class": "fab fa-python",
+        "order": 2
+    },
+    {
+        "id": "4", 
+        "name": "MongoDB",
+        "category": "database",
+        "description": "NoSQL database for modern applications",
+        "icon_class": "fas fa-database",
+        "order": 1
+    },
+    {
+        "id": "5",
+        "name": "Firebase",
+        "category": "backend",
+        "description": "Real-time database and authentication platform",
+        "icon_class": "fas fa-fire",
         "order": 3
+    },
+    {
+        "id": "6",
+        "name": "AWS",
+        "category": "devops",
+        "description": "Cloud computing platform for scalable infrastructure",
+        "icon_class": "fab fa-aws",
+        "order": 1
+    },
+    {
+        "id": "7",
+        "name": "Docker",
+        "category": "devops",
+        "description": "Containerization for consistent development environments",
+        "icon_class": "fab fa-docker",
+        "order": 2
+    },
+    {
+        "id": "8",
+        "name": "Flutter",
+        "category": "mobile",
+        "description": "Cross-platform mobile app development framework",
+        "icon_class": "fas fa-mobile-alt",
+        "order": 1
     }
 ]
+
+# PROJECTS = [
+#     {
+#         "id": "1",
+#         "name": "CloudSync Platform",
+#         "description": "A scalable cloud synchronization platform for enterprise data management with real-time collaboration features.",
+#         "image_url": None,
+#         "project_url": "https://example.com/cloudsync",
+#         "github_repo": "luphonix/cloud-sync",
+#         "technologies": ["1", "2", "4", "6"],
+#         "order": 1
+#     },
+#     {
+#         "id": "2", 
+#         "name": "EcoTrack Mobile App",
+#         "description": "Mobile application for tracking and reducing carbon footprint with gamification elements to encourage sustainable behaviors.",
+#         "image_url": None,
+#         "project_url": "https://example.com/ecotrack",
+#         "github_repo": "luphonix/eco-track",
+#         "technologies": ["3", "5", "8"],
+#         "order": 2
+#     },
+#     {
+#         "id": "3",
+#         "name": "DataViz Dashboard",
+#         "description": "Interactive data visualization dashboard for business analytics with customizable widgets and real-time updates.",
+#         "image_url": None,
+#         "project_url": "https://example.com/dataviz",
+#         "github_repo": "luphonix/data-viz",
+#         "technologies": ["1", "3", "5", "7"],
+#         "order": 3
+#     }
+# ]
 
 def get_technology_by_id(tech_id):
     for tech in TECHNOLOGIES:
@@ -272,12 +460,115 @@ def get_github_repositories(username="Luphonix-Prime", limit=6):
         print(f"Unexpected error when fetching GitHub repositories: {str(e)}")
         return []
 
+def get_projects_from_github(username="Luphonix-Prime"):
+    try:
+        # Get filtered repositories (already excludes .github repos)
+        all_repos = get_github_repositories(username, limit=10)
+        projects = []
+        
+        headers = {
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        
+        for i, repo in enumerate(all_repos, 1):
+            # Skip .github repositories (additional check)
+            if '.github' in repo['name'].lower():
+                continue
+                
+            # Get deployment info
+            headers = {
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github.v3+json"
+            }
+            
+            # Check for GitHub Pages deployment
+            pages_url = f"https://api.github.com/repos/{username}/{repo['name']}/pages"
+            try:
+                pages_response = requests.get(pages_url, headers=headers)
+                if pages_response.status_code == 200:
+                    live_url = pages_response.json().get('html_url')
+                else:
+                    live_url = None
+            except:
+                live_url = None
+            
+            # Check for repository homepage/website URL
+            if not live_url:
+                repo_url = f"https://api.github.com/repos/{username}/{repo['name']}"
+                try:
+                    repo_response = requests.get(repo_url, headers=headers)
+                    if repo_response.status_code == 200:
+                        repo_data = repo_response.json()
+                        live_url = repo_data.get('homepage') or None
+                except:
+                    live_url = None
+
+            # Detect technologies based on repository language
+            tech_mapping = {
+                "JavaScript": ["1"],  # React
+                "TypeScript": ["1"],  # React
+                "Python": ["3"],      # Python
+                "Dart": ["8"],        # Flutter
+                "Go": ["2"],          # Backend
+                "Java": ["2"],        # Backend
+                "Ruby": ["2"],        # Backend
+                "PHP": ["2"]          # Backend
+            }
+            
+            # Get technology IDs based on repo language
+            technologies = tech_mapping.get(repo['language'], [])
+            
+            # Add additional tech IDs based on repository topics
+            if "aws" in repo['name'].lower():
+                technologies.append("6")  # AWS
+            if "docker" in repo['name'].lower():
+                technologies.append("7")  # Docker
+            if "mongodb" in repo['name'].lower():
+                technologies.append("4")  # MongoDB
+            if "firebase" in repo['name'].lower():
+                technologies.append("5")  # Firebase
+                
+            # Modify the image URL to better handle live sites
+            if live_url:
+                image_url = f"https://image.thum.io/get/width/800/crop/600/maxAge/24/{live_url}"
+            else:
+                image_url = f"https://image.thum.io/get/width/800/crop/600/maxAge/24/https://github.com/{username}/{repo['name']}"
+                
+            project = {
+                "id": str(i),
+                "name": repo['name'],
+                "description": repo['description'],
+                "image_url": image_url,
+                "project_url": live_url or repo['url'],
+                "github_repo": f"{username}/{repo['name']}",
+                "technologies": list(set(technologies)),
+                "order": i
+            }
+            projects.append(project)
+        
+        return projects
+        
+    except Exception as e:
+        logging.error(f"Error fetching projects from GitHub: {str(e)}")
+        return []
+
+# Replace static PROJECTS with dynamic function
+def get_projects():
+    """Get projects with fallback to static data"""
+    projects = get_projects_from_github()
+    if not projects:
+        logging.warning("Failed to fetch projects from GitHub, using static data")
+        return PROJECTS
+    return projects
+
+# Update the routes to use the new function
 @app.route('/')
 def index():
     """Main landing page view"""
     team_members = fetch_github_team()[:4]  # Fetch only 4 members
     technologies = sorted(TECHNOLOGIES, key=lambda x: (x["category"], x["order"]))[:8]
-    projects = sorted(PROJECTS, key=lambda x: x["order"])[:3]
+    projects = sorted(get_projects(), key=lambda x: x["order"])[:3]
 
     for project in projects:
         project["tech_objects"] = get_technologies_for_project(project)
@@ -321,7 +612,7 @@ def technologies():
 @app.route('/projects')
 def projects():
     """Projects view with GitHub integration"""
-    projects_list = sorted(PROJECTS, key=lambda x: x["order"])
+    projects_list = sorted(get_projects(), key=lambda x: x["order"])
     
     # Add technologies to projects
     for project in projects_list:
