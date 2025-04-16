@@ -415,19 +415,44 @@ main {
     animation: shimmer 2s infinite;
 }
 
+.featured-project-card {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.project-image {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+.project-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+}
+
 .tech-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .tech-tag {
-    background-color: rgba(0, 195, 255, 0.2);
-    color: var(--luphonix-light);
+    background-color: rgba(0, 195, 255, 0.1);
+    color: var(--luphonix-color);
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
-    font-size: 0.8rem;
-    border: 1px solid rgba(0, 195, 255, 0.3);
+    font-size: 0.875rem;
 }
 
 .repo-description {
