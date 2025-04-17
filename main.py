@@ -529,11 +529,16 @@ def get_projects_from_github(username="Luphonix-Prime"):
             if "firebase" in repo['name'].lower():
                 technologies.append("5")  # Firebase
                 
-            # # Modify the image URL to better handle live sites
+            # Modify the image URL to better handle live sites
             # if live_url:
             #     image_url = f"https://image.thum.io/get/width/800/crop/600/maxAge/24/{live_url}"
             # else:
             #     image_url = f"https://image.thum.io/get/width/800/crop/600/maxAge/24/https://github.com/{username}/{repo['name']}"
+            
+            if live_url:
+                image_url = f"https://api.scrnify.com/screenshot?url={live_url}&width=800&height=600&delay=2&full_page=true"
+            else:
+                image_url = f"https://api.scrnify.com/screenshot?url={repo_url}&width=800&height=600&delay=2&full_page=true"
                 
                 
             # Modify the image URL to better handle live sites using CaptureKit
@@ -543,13 +548,7 @@ def get_projects_from_github(username="Luphonix-Prime"):
             #     repo_url = f"https://github.com/{username}/{repo['name']}"
             #     image_url = f"https://api.capturekit.io/api/screenshot?url={repo_url}&width=800&height=600"
 
-            # Modify the image URL to better handle live sites using Scrnify with delay and full page capture
-        if live_url:
-            image_url = f"https://api.scrnify.com/screenshot?url={live_url}&width=800&height=600&delay=2&full_page=true"
-        else:
-            repo_url = f"https://github.com/{username}/{repo['name']}"
-            image_url = f"https://api.scrnify.com/screenshot?url={repo_url}&width=800&height=600&delay=2&full_page=true"
-
+            
             project = {
                 "id": str(i),
                 "name": repo['name'],
