@@ -462,6 +462,7 @@ def get_github_repositories(username="Luphonix-Prime", limit=6):
 
 def get_projects_from_github(username="Luphonix-Prime"):
     try:
+        # Get filtered repositories (already excludes .github repos)
         all_repos = get_github_repositories(username, limit=10)
         projects = []
         
@@ -471,30 +472,90 @@ def get_projects_from_github(username="Luphonix-Prime"):
         }
         
         for i, repo in enumerate(all_repos, 1):
+            # Skip .github repositories (additional check)
             if '.github' in repo['name'].lower():
                 continue
-            
-            # Replace live preview with static image mapping
-            image_mapping = {
-                "Luphonix": "/static/projects/Luphonix-Prime.jpeg",
-                "Luphonix-Sphere": "/static/projects/Luphonix-Sphere.jpeg",
-                "Luphonix-Nixkart": "/static/projects/Luphonix-Nixkart.png",
-                # Add more project-image mappings as needed
+                
+            # Get deployment info
+            headers = {
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github.v3+json"
             }
             
-            # Get static image or use default
-            image_url = image_mapping.get(
-                repo['name'].lower(), 
-                "/static/blue_phoenix_logo.jpg"
-            )
+            # Check for GitHub Pages deployment
+            pages_url = f"https://api.github.com/repos/{username}/{repo['name']}/pages"
+            try:
+                pages_response = requests.get(pages_url, headers=headers)
+                if pages_response.status_code == 200:
+                    live_url = pages_response.json().get('html_url')
+                else:
+                    live_url = None
+            except:
+                live_url = None
             
-            # Rest of the project setup
+            # Check for repository homepage/website URL
+            if not live_url:
+                repo_url = f"https://api.github.com/repos/{username}/{repo['name']}"
+                try:
+                    repo_response = requests.get(repo_url, headers=headers)
+                    if repo_response.status_code == 200:
+                        repo_data = repo_response.json()
+                        live_url = repo_data.get('homepage') or None
+                except:
+                    live_url = None
+
+            # Detect technologies based on repository language
+            tech_mapping = {
+                "JavaScript": ["1"],  # React
+                "TypeScript": ["1"],  # React
+                "Python": ["3"],      # Python
+                "Dart": ["8"],        # Flutter
+                "Go": ["2"],          # Backend
+                "Java": ["2"],        # Backend
+                "Ruby": ["2"],        # Backend
+                "PHP": ["2"]          # Backend
+            }
+            
+            # Get technology IDs based on repo language
+            technologies = tech_mapping.get(repo['language'], [])
+            
+            # Add additional tech IDs based on repository topics
+            if "aws" in repo['name'].lower():
+                technologies.append("6")  # AWS
+            if "docker" in repo['name'].lower():
+                technologies.append("7")  # Docker
+            if "mongodb" in repo['name'].lower():
+                technologies.append("4")  # MongoDB
+            if "firebase" in repo['name'].lower():
+                technologies.append("5")  # Firebase
+                
+            # # Modify the image URL to better handle live sites
+            # if live_url:
+            #     image_url = f"https://image.thum.io/get/width/800/crop/600/maxAge/24/{live_url}"
+            # else:
+            #     image_url = f"https://image.thum.io/get/width/800/crop/600/maxAge/24/https://github.com/{username}/{repo['name']}"
+                
+                
+            # Modify the image URL to better handle live sites using CaptureKit
+            # if live_url:
+            #     image_url = f"https://api.capturekit.io/api/screenshot?url={live_url}&width=800&height=600"
+            # else:
+            #     repo_url = f"https://github.com/{username}/{repo['name']}"
+            #     image_url = f"https://api.capturekit.io/api/screenshot?url={repo_url}&width=800&height=600"
+
+            # Modify the image URL to better handle live sites using Scrnify with delay and full page capture
+        if live_url:
+            image_url = f"https://api.scrnify.com/screenshot?url={live_url}&width=800&height=600&delay=2&full_page=true"
+        else:
+            repo_url = f"https://github.com/{username}/{repo['name']}"
+            image_url = f"https://api.scrnify.com/screenshot?url={repo_url}&width=800&height=600&delay=2&full_page=true"
+
             project = {
                 "id": str(i),
                 "name": repo['name'],
                 "description": repo['description'],
-                "image_url": image_url,  # Using static image URL
-                "project_url": repo['url'],
+                "image_url": image_url,
+                "project_url": live_url or repo['url'],
                 "github_repo": f"{username}/{repo['name']}",
                 "technologies": list(set(technologies)),
                 "order": i
